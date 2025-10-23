@@ -1,0 +1,134 @@
+/* =============================
+   ADMIN PANEL PAGE STYLING
+   ============================= */
+#admin-panel {
+  position: relative;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+  overflow: hidden;
+  min-height: 100vh;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* Parallax background animation */
+.parallax-bg {
+  background: url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+  background-attachment: fixed;
+  opacity: 0.2;
+  animation: slowMove 30s linear infinite alternate;
+  z-index: 0;
+}
+
+@keyframes slowMove {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Container above background */
+#admin-panel .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Section title */
+#admin-panel h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  animation: fadeUp 1.5s ease forwards;
+}
+
+/* Subtitle */
+#admin-panel p {
+  font-size: 1.1rem;
+  opacity: 0.85;
+  animation: fadeUp 2s ease forwards;
+}
+
+/* Action Cards */
+.admin-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.admin-card h5 {
+  font-weight: 600;
+  transition: font-weight 0.3s ease;
+}
+
+.admin-card h5:hover,
+.admin-card h5:focus {
+  font-weight: 800;
+  color: #0d1b2a;
+}
+
+/* Buttons inside cards */
+.admin-card button {
+  transition: all 0.3s ease;
+}
+
+.admin-card button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* Four teams cards */
+.admin-team {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  animation: floatTeam 6s ease-in-out infinite alternate, fadeUp 1.5s ease forwards;
+}
+
+.admin-team:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 30px 40px rgba(0, 0, 0, 0.8);
+}
+
+.admin-team h5 {
+  font-weight: 600;
+  transition: font-weight 0.3s ease;
+}
+
+.admin-team h5:hover {
+  font-weight: 800;
+}
+
+/* Team card colors (premium gradient) */
+.gharnata { background: linear-gradient(135deg, #1a9656, #17e400); }
+.saraqusta { background: linear-gradient(135deg, #ff416c, #ff0202); }
+.thulythula { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333 !important; }
+.ishbiliyya { background: linear-gradient(135deg, #396afc, #2948ff); }
+
+/* Floating effect for teams */
+@keyframes floatTeam {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Fade-up animation */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-card, .admin-team {
+    margin-bottom: 20px;
+  }
+  #admin-panel h2 {
+    font-size: 2rem;
+  }
+  #admin-panel p {
+    font-size: 1rem;
+  }
+}

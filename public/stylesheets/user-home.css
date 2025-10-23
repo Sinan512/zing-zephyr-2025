@@ -1,0 +1,147 @@
+/* --- Base Styles --- */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #9a53dc, #fcfbfc, #c09ce0);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #222;
+  position: relative;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #ffc107;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* --- About Section --- */
+.about-section {
+  position: relative;
+  padding: 100px 15px 120px;
+  overflow: hidden;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  color: #444;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Glass-style Button */
+.btn-glass {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #ffc107;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* --- Teams Section --- */
+.teams-section {
+  position: relative;
+  padding: 100px 15px 120px;
+  overflow: hidden;
+}
+
+/* Team Cards */
+.team-card {
+  position: relative;
+  min-height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a9656, #17e400); /* example gradient */
+  color: #fff;
+  transition: transform 0.4s;
+}
+
+.team-card h4 {
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  margin: 0;
+}
+.team-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* Overlay */
+.team-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.65);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  text-align: center;
+}
+.team-card:hover .team-overlay {
+  opacity: 1;
+}
+
+/* Team Gradients */
+#gharnata { background: linear-gradient(135deg, #1a9656, #17e400); }
+#saraqusta { background: linear-gradient(135deg, #ff416c, #ff0202); }
+#thulythula { background: linear-gradient(135deg, #f7971e, #ffd200); }
+#ishbiliyya { background: linear-gradient(135deg, #396afc, #2948ff); }
+
+/* Background Shapes for Parallax */
+.bg-shape {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 50%;
+  animation: floatShape 15s ease-in-out infinite;
+  z-index: 0;
+}
+.shape1 { top: 20%; left: 10%; animation-delay: 0s; }
+.shape2 { top: 70%; left: 80%; animation-delay: 3s; }
+.shape3 { top: 30%; right: 15%; animation-delay: 1s; }
+.shape4 { bottom: 20%; left: 40%; animation-delay: 2s; }
+
+@keyframes floatShape {
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+/* Gradient Animation for Team Cards */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .team-card { height: 180px; }
+  .btn-glass { padding: 10px 20px; font-size: 0.9rem; }
+  .about-text { font-size: 1rem; }
+}

@@ -1,0 +1,166 @@
+/* =============================
+   ADMIN HERO HEADER UPDATED
+   ============================= */
+
+.hero-section {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ad6ec2, #1f3646); /* soft artistic gradient */
+  padding: 60px 20px;
+}
+
+/* --- Background artistic icons floating --- */
+.hero-section::before,
+.hero-section::after {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.15;
+  animation: floatIcons 20s ease-in-out infinite alternate;
+}
+
+.hero-section::before {
+  top: 10%;
+  left: 5%;
+  background-image: url('https://img.icons8.com/ios-filled/100/000000/paint-palette.png');
+}
+
+.hero-section::after {
+  bottom: 10%;
+  right: 5%;
+  background-image: url('https://img.icons8.com/ios-filled/100/000000/microphone.png');
+  animation-delay: 5s;
+}
+
+@keyframes floatIcons {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-15px) rotate(10deg) scale(1.05); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* Top logos */
+.hero-logo {
+  height: 70px;
+  width: auto;
+  opacity: 0.9;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.hero-logo:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* Hero content */
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: fadeUp 1.5s ease forwards;
+  margin-bottom: 15px;
+}
+
+.hero-content p.lead {
+  font-size: 1.2rem;
+  opacity: 0.85;
+  animation: fadeUp 2s ease forwards;
+  margin-bottom: 0.5rem;
+}
+
+
+
+/* --- Hero Buttons (Text Only) --- */
+.hero-buttons a {
+  background: transparent;
+  border: none;
+  color: #ede7e7;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  text-decoration: none;
+  z-index: 5;
+}
+
+/* Hover underline effect */
+.hero-buttons a::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #ffc107;
+  transition: width 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.hero-buttons a:hover::after { width: 100%; }
+
+.hero-buttons a:hover {
+  color: #ffc107;
+  transform: translateY(-2px);
+  border-radius: 25px;
+}
+
+/* --- Marquee moving text (fully filled) --- */
+.hero-section .moving-text {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.25);
+  border-radius: 8px;
+}
+
+.hero-section .moving-text .marquee-track {
+  display: inline-flex;
+  min-width: max-content;
+  animation: marqueeEndless 15s linear infinite;
+}
+
+.hero-section .moving-text .marquee-track span {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #0d1b2a;
+  padding: 0 3rem; /* spacing between repeats */
+}
+
+/* Keyframes for continuous loop */
+@keyframes marqueeEndless {
+  0% { transform: translateX(0%); }
+  100%{ transform: translateX(-50%); }
+}
+
+/* Fade-up animation */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-content h1 { font-size: 2rem; }
+  .hero-content p.lead { font-size: 1rem; }
+  .hero-logo { height: 50px; }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 10px;
+    top: 10px;
+  }
+
+  .hero-section .moving-text .marquee-track span {
+    font-size: 0.9rem;
+    padding: 0 1rem;
+  }
+}
