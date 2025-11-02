@@ -123,6 +123,45 @@
       </div>
     </div>
 
+    <!-- ADMIN CREDENTIALS SECTION -->
+    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
+      <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title">Admin Credentials</h3>
+        </div>
+        
+        <form action="/admin/reset-credentials" method="POST" class="admin-credentials-form">
+          <div class="input-group mb-3">
+            <label for="newUsername">New Username</label>
+            <input
+              type="text"
+              id="newUsername"
+              name="username"
+              placeholder="Enter new username..."
+              required
+              class="form-control"
+            />
+          </div>
+          
+          <div class="input-group mb-3">
+            <label for="newPassword">New Password</label>
+            <input
+              type="password"
+              id="newPassword"
+              name="password"
+              placeholder="Enter new password..."
+              required
+              class="form-control"
+            />
+          </div>
+          
+          <button type="submit" class="btn-reset-credentials">
+            <i class="bi bi-key-fill"></i> Reset Credentials
+          </button>
+        </form>
+      </div>
+    </div>
+
   </div>
 
 </section>

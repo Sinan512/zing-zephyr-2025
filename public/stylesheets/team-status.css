@@ -1,0 +1,254 @@
+/* Team Status Page - Glassmorphism Design */
+.team-status-container {
+  background: linear-gradient(120deg, #940dae, #1e1a54);
+  color: #fdfbfb;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.page-title {
+  color: #efedf1;
+  text-shadow: 0 0 15px #b57fff;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.page-title i {
+  color: #ffd700;
+  margin-right: 15px;
+  font-size: 2.2rem;
+}
+
+.program-count-badge {
+  display: inline-block;
+  background: rgba(181, 127, 255, 0.3);
+  color: #ffffff;
+  padding: 10px 25px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid rgba(181, 127, 255, 0.5);
+  text-shadow: 0 0 10px rgba(181, 127, 255, 0.5);
+  margin-bottom: 40px;
+}
+
+.teams-leaderboard {
+  margin-top: 30px;
+}
+
+.team-status-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px 25px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(181, 127, 255, 0.8), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.team-status-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(149, 58, 185, 0.5);
+  border-color: rgba(181, 127, 255, 0.6);
+}
+
+/* Rank-specific styling */
+.rank-first {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1));
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+}
+
+.rank-first:hover {
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+}
+
+.rank-second {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.25), rgba(192, 192, 192, 0.1));
+  border-color: rgba(192, 192, 192, 0.6);
+  box-shadow: 0 8px 32px rgba(192, 192, 192, 0.3);
+}
+
+.rank-second:hover {
+  box-shadow: 0 15px 40px rgba(192, 192, 192, 0.5);
+}
+
+.rank-third {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.25), rgba(205, 127, 50, 0.1));
+  border-color: rgba(205, 127, 50, 0.6);
+  box-shadow: 0 8px 32px rgba(205, 127, 50, 0.3);
+}
+
+.rank-third:hover {
+  box-shadow: 0 15px 40px rgba(205, 127, 50, 0.5);
+}
+
+.rank-normal {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.rank-badge-large {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.team-info-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.team-status-name {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.rank-first .team-status-name {
+  color: #ffd700;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+.rank-second .team-status-name {
+  color: #c0c0c0;
+  text-shadow: 0 0 15px rgba(192, 192, 192, 0.8);
+}
+
+.rank-third .team-status-name {
+  color: #cd7f32;
+  text-shadow: 0 0 15px rgba(205, 127, 50, 0.8);
+}
+
+.points-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.points-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.points-value-large {
+  color: #ffd700;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .rank-badge-large {
+    font-size: 3.5rem;
+  }
+  
+  .team-status-name {
+    font-size: 1.6rem;
+  }
+  
+  .points-value-large {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-status-container {
+    padding: 30px 15px;
+  }
+  
+  .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .team-status-card {
+    padding: 25px 20px;
+  }
+  
+  .rank-badge-large {
+    font-size: 3rem;
+    margin-bottom: 15px;
+  }
+  
+  .team-status-name {
+    font-size: 1.4rem;
+  }
+  
+  .points-value-large {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .rank-badge-large {
+    font-size: 2.5rem;
+  }
+  
+  .team-status-name {
+    font-size: 1.2rem;
+  }
+  
+  .points-value-large {
+    font-size: 1.8rem;
+  }
+}
+

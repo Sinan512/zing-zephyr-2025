@@ -18,10 +18,7 @@
                 Every performance reflects our shared belief that when <strong>"I" becomes "We"</strong>, wonders happen.
               </p>
               <div class="hero-buttons" data-aos="fade-up" data-aos-delay="300">
-                <a href="#programs" class="btn-hero btn-primary">
-                  <i class="bi bi-calendar-event"></i> Programs
-                </a>
-                <a href="#teams" class="btn-hero btn-secondary">
+                <a href="#teams" class="btn-hero btn-primary">
                   <i class="bi bi-people"></i> Meet Teams
                 </a>
               </div>
@@ -38,21 +35,7 @@
     </div>
   </section>
 
-  <!-- About Programs Section -->
-  <section id="programs" class="programs-section">
-    <div class="container">
-      <h2 class="section-title" data-aos="fade-down">
-        <i class="bi bi-calendar-event-fill"></i> Our Programs
-      </h2>
-      
-      <div class="empty-state" data-aos="fade-up">
-        <i class="bi bi-calendar-check"></i>
-        <p>Explore our exciting programs and events!</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Teams Section -->
+  <!-- Teams Section with Historical Background -->
   <section id="teams" class="teams-section">
     <div class="container">
       <h2 class="section-title" data-aos="fade-down">
@@ -60,23 +43,28 @@
       </h2>
       <div class="row g-4">
         {{#each teams}}
-        <div class="col-12 col-sm-6 col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="{{@index}}00">
-          <div class="team-card-modern" data-team="{{this.teamName}}">
-            <div class="team-glow"></div>
-            <div class="team-content">
-              <div class="team-icon">
+        <div class="col-12 col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="{{@index}}00">
+          <div class="team-card-historical" data-team="{{this.teamName}}">
+            <div class="team-header">
+              <div class="team-icon-wrapper">
                 <i class="bi bi-flag-fill"></i>
               </div>
-              <h3 class="team-name">{{this.teamName}}</h3>
-              <div class="team-stats">
-                <span class="stat">
-                  <i class="bi bi-person"></i>
-                  <span id="member-count-{{@index}}">-</span>
-                </span>
-              </div>
+              <h3 class="team-name-hist">{{this.teamName}}</h3>
             </div>
-            <div class="team-overlay">
-              <p>Click to explore team members and achievements</p>
+            <div class="team-body">
+              <div class="historical-info">
+                {{#if (eq this.teamName "GHARNATA")}}
+                  <p class="history-text">Inspired by Granada — symbolizing passion, art, and spirit. Granada represents the pinnacle of Andalusian culture and artistic excellence.</p>
+                {{else if (eq this.teamName "SARAQUSTA")}}
+                  <p class="history-text">Rooted in Zaragoza — a blend of strength and culture. Zaragoza embodies resilience and rich cultural heritage.</p>
+                {{else if (eq this.teamName "THULYTHULA")}}
+                  <p class="history-text">From Seville — representing harmony, beauty, and elegance. Seville is known for its artistic and cultural sophistication.</p>
+                {{else if (eq this.teamName "ISHBILIYYA")}}
+                  <p class="history-text">Echoing Córdoba — symbol of unity and creativity. Córdoba represents intellectual brilliance and collaborative spirit.</p>
+                {{else}}
+                  <p class="history-text">A team dedicated to excellence, unity, and creative expression in the spirit of Zing Zephyr.</p>
+                {{/if}}
+              </div>
             </div>
           </div>
         </div>
@@ -87,50 +75,16 @@
 
 </div>
 
-<!-- Program Details Modal -->
-<div id="programModal" class="modal-overlay">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeProgramModal()">&times;</span>
-    <div id="modalBody"></div>
-  </div>
-</div>
-
 <script>
-  // Calculate and display member counts
-  document.addEventListener('DOMContentLoaded', function() {
-    {{#each teams}}
-    (function(index) {
-      let count = 0;
-      {{#if this.["Pre Zone"]}}
-      {{#each this.["Pre Zone"]}}
-      count++;
-      {{/each}}
-      {{/if}}
-      {{#if this.["Mid Zone"]}}
-      {{#each this.["Mid Zone"]}}
-      count++;
-      {{/each}}
-      {{/if}}
-      {{#if this.["High Zone"]}}
-      {{#each this.["High Zone"]}}
-      count++;
-      {{/each}}
-      {{/if}}
-      const element = document.getElementById('member-count-' + index);
-      if (element) element.textContent = count || '0';
-    })({{@index}});
-    {{/each}}
+  // Team card hover effects
+  document.querySelectorAll('.team-card-historical').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.classList.add('hovered');
+    });
+    card.addEventListener('mouseleave', function() {
+      this.classList.remove('hovered');
+    });
   });
-
-  function viewProgramDetails(programName, zone) {
-    // This would fetch and display full program details
-    // For now, show a simple alert
-    alert(`Program: ${programName}\nZone: ${zone}\n\nFull details coming soon!`);
-  }
-
-  function closeProgramModal() {
-    document.getElementById('programModal').style.display = 'none';
-  }
 
   // Smooth scrolling for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -143,16 +97,6 @@
           block: 'start'
         });
       }
-    });
-  });
-
-  // Team card hover effects
-  document.querySelectorAll('.team-card-modern').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      this.classList.add('hovered');
-    });
-    card.addEventListener('mouseleave', function() {
-      this.classList.remove('hovered');
     });
   });
 </script>

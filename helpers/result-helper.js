@@ -143,28 +143,29 @@ for (const r of results) {
   }
 
   // 🔹 Continue only for Individual programs
-  const zone = programDoc.zone;
+  const programZone = programDoc.zone;
   const teamDoc = await db.collection(collections.TEAM_DATA).findOne({ teamName: team });
   if (!teamDoc) continue;
 
   let memberFound = false;
 
-  // --- For specific zones ---
-  if (zone !== "General") {
+  // --- For Individual programs with specific zones (Pre Zone, Mid Zone, High Zone) ---
+  // Match by: name, team, AND zone
+  if (programZone !== "General") {
     const filter = { teamName: team };
-    filter[`${zone}.member`] = participant;
+    filter[`${programZone}.member`] = participant;
 
-    const update = { $inc: { [`${zone}.$.point`]: mark } };
+    const update = { $inc: { [`${programZone}.$.point`]: mark } };
 
     const result = await db.collection(collections.TEAM_DATA).updateOne(filter, update);
 
     if (result.modifiedCount > 0) {
-      console.log(`✅ Added ${mark} to ${participant} in ${zone}`);
+      console.log(`✅ Added ${mark} to ${participant} in ${programZone} (Individual)`);
       memberFound = true;
     }
   }
-
-  // --- For General programs ---
+  // --- For General zone programs (any zone can participate) ---
+  // Match by: name and team only (no zone check)
   else {
     for (const z of ["Pre Zone", "Mid Zone", "High Zone"]) {
       const filter = { teamName: team };
@@ -175,8 +176,9 @@ for (const r of results) {
       const result = await db.collection(collections.TEAM_DATA).updateOne(filter, update);
 
       if (result.modifiedCount > 0) {
+        console.log(`✅ Added ${mark} to ${participant} in ${z} (General program)`);
         memberFound = true;
-        break;
+        break; // Only add to first matching zone found
       }
     }
   }
@@ -238,13 +240,22 @@ for (const r of results) {
     
     return { message: "Pending results initialized", count: allResults.length };
   },
-  // Get pending results with team points for each program
+  // Get pending results with team points for each program (excluding already published)
   getPendingResults:async()=>{
     var db=await connectDB();
-    const pending = await db.collection(collections.PENDING_RESULTS).find().toArray();
     
-    // Get team points to calculate per-program totals
-    const teamPoints = await db.collection(collections.TEAM_POINTS).find().toArray();
+    // Get all published programs to exclude from pending
+    const published = await db.collection(collections.PUBLISHED).find().toArray();
+    const publishedKeys = new Set(published.map(p => `${p.programName}|${p.zone}`));
+    
+    // Get all pending results
+    const allPending = await db.collection(collections.PENDING_RESULTS).find().toArray();
+    
+    // Filter out already published programs
+    const pending = allPending.filter(result => {
+      const key = `${result.programName}|${result.zone}`;
+      return !publishedKeys.has(key);
+    });
     
     // Add team point totals for each program
     const resultsWithTeamPoints = pending.map(result => {
@@ -328,34 +339,114 @@ for (const r of results) {
     
     return resultsWithTeamPoints;
   },
-  // Publish team points
+  // Get published results with only top 3 for user display (handling ties)
+  getPublishedResultsTop3:async()=>{
+    var db=await connectDB();
+    const published = await db.collection(collections.PUBLISHED).find().sort({ publishOrder: 1 }).toArray();
+    
+    // Process each program to show only top 3 with ties
+    const resultsTop3 = published.map(result => {
+      let top3 = [];
+      if (result.results && Array.isArray(result.results)) {
+        const sorted = [...result.results].sort((a, b) => (b.point || 0) - (a.point || 0));
+        
+        if (sorted.length > 0) {
+          // Get unique point values in descending order
+          const uniquePoints = [...new Set(sorted.map(r => r.point || 0))].sort((a, b) => b - a);
+          
+          // Get all participants for 1st, 2nd, 3rd positions (handling ties)
+          const firstPoint = uniquePoints[0];
+          const secondPoint = uniquePoints[1];
+          const thirdPoint = uniquePoints[2];
+          
+          // First place (all with highest points)
+          sorted.filter(r => (r.point || 0) === firstPoint).forEach(r => {
+            top3.push({ participant: r.participant, team: r.team, position: 1 });
+          });
+          
+          // Second place (all with second highest points)
+          if (secondPoint !== undefined && top3.length < 10) {
+            sorted.filter(r => (r.point || 0) === secondPoint).forEach(r => {
+              top3.push({ participant: r.participant, team: r.team, position: 2 });
+            });
+          }
+          
+          // Third place (all with third highest points)
+          if (thirdPoint !== undefined && top3.length < 10) {
+            sorted.filter(r => (r.point || 0) === thirdPoint).forEach(r => {
+              top3.push({ participant: r.participant, team: r.team, position: 3 });
+            });
+          }
+          
+          // Limit to max 20 entries (to handle many ties)
+          top3 = top3.slice(0, 20);
+        }
+      }
+      
+      return {
+        programName: result.programName,
+        zone: result.zone,
+        publishOrder: result.publishOrder,
+        top3: top3
+      };
+    });
+    
+    return resultsTop3;
+  },
+  // Publish team points (can be called multiple times, recalculates from published programs)
   publishTeamPoints:async()=>{
     var db=await connectDB();
     
-    // Check if already published
-    const existing = await db.collection(collections.PUBLISHED_TEAM).findOne();
-    if (existing) {
-      throw new Error("Team points already published");
-    }
+    // Get all published programs
+    const published = await db.collection(collections.PUBLISHED).find().sort({ publishOrder: 1 }).toArray();
+    const programCount = published.length;
     
-    // Get current team points
-    const teamPoints = await db.collection(collections.TEAM_POINTS).find().toArray();
+    // Calculate team points from published programs
+    const teamPointsMap = {};
     
-    // Sort by total points
-    const sortedTeams = teamPoints
+    published.forEach(result => {
+      if (result.results && Array.isArray(result.results)) {
+        result.results.forEach(r => {
+          if (!teamPointsMap[r.team]) {
+            teamPointsMap[r.team] = 0;
+          }
+          teamPointsMap[r.team] += r.mark || 0;
+        });
+      }
+    });
+    
+    // Convert to array and sort
+    const sortedTeams = Object.keys(teamPointsMap)
       .map(team => ({
-        team: team.team,
-        totalPoints: team.totalPoints || 0,
-        programs: team.programs || []
+        team: team,
+        totalPoints: teamPointsMap[team],
+        programCount: programCount
       }))
       .sort((a, b) => b.totalPoints - a.totalPoints);
+    
+    // Delete existing published team points if any
+    await db.collection(collections.PUBLISHED_TEAM).deleteMany({});
     
     // Add to published team collection
     await db.collection(collections.PUBLISHED_TEAM).insertOne({
       teams: sortedTeams,
+      programCount: programCount,
       publishedAt: new Date()
     });
     
-    return { success: true, teamsCount: sortedTeams.length };
+    return { success: true, teamsCount: sortedTeams.length, programCount: programCount };
+  },
+  // Get published team points with program count
+  getPublishedTeamPoints:async()=>{
+    var db=await connectDB();
+    const publishedTeamData = await db.collection(collections.PUBLISHED_TEAM).findOne();
+    if (publishedTeamData) {
+      return {
+        teams: publishedTeamData.teams || [],
+        programCount: publishedTeamData.programCount || 0,
+        publishedAt: publishedTeamData.publishedAt
+      };
+    }
+    return { teams: [], programCount: 0 };
   }
 };

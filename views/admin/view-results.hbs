@@ -170,6 +170,9 @@
       <!-- Team Points Leaderboard Section -->
       <div class="team-points-section mt-5">
         <h3 class="text-center mb-4 section-title">Team Points Leaderboard</h3>
+        {{#if programCount}}
+        <p class="text-center mb-4 program-count-badge">After {{programCount}} program{{#if (neq programCount 1)}}s{{/if}}</p>
+        {{/if}}
         <div class="teams-container row g-4">
           {{#each teamsByPoints}}
           <div class="col-lg-4 col-md-6 col-12">

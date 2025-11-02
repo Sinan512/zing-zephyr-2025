@@ -24,9 +24,21 @@ app.engine("hbs", engine({
   helpers: {
     inc: (v) => v == null ? '' : parseInt(v, 10) + 1,
     lookup: (obj, key) => {
-      return obj && obj[key] ? obj[key] : [];
+      if (Array.isArray(obj) && typeof key === 'number') {
+        return obj[key] || null;
+      }
+      return obj && obj[key] ? obj[key] : null;
     },
-    eq: (a, b) => a === b
+    eq: (a, b) => a === b,
+    neq: (a, b) => a !== b,
+    gte: (a, b) => a >= b,
+    length: (arr) => Array.isArray(arr) ? arr.length : 0,
+    getByIndex: (arr, index) => {
+      if (Array.isArray(arr) && typeof index === 'number') {
+        return arr[index] || null;
+      }
+      return null;
+    }
   }
 }));
 app.set("view engine", "hbs");
@@ -39,10 +51,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-  secret: "key",
+  secret: "zing-zephyr-2025-secret-key",
   resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 300000 }
+  saveUninitialized: false,
+  cookie: { 
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    httpOnly: true,
+    secure: false // Set to true if using HTTPS
+  }
 }));
 
 let db;

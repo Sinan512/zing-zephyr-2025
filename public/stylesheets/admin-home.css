@@ -1,39 +1,62 @@
- /* ========== BASE / THEME ========== */
-:root{
-  --bg-1: #481a58;         /* deep navy */
-  --bg-2: #391f60;         /* indigo */
-  --accent-1: #8e63ca;     /* vivid violet */
-  --accent-2: #5f2a98;     /* coral */
-  --glass: rgba(255,255,255,0.06);
-  --glass-2: rgba(255,255,255,0.03);
-  --muted: rgba(255,255,255,0.7);
-  --card-glow: 0 8px 40px rgba(155,92,246,0.12);
-  --soft-shadow: 0 6px 24px rgba(11,12,22,0.5);
-}
-.admin-section {
-  min-height: 100vh;
-  background: radial-gradient(1200px 600px at 10% 20%, rgba(155,92,246,0.12), transparent 8%),
-              radial-gradient(900px 500px at 90% 80%, rgba(58, 26, 98, 0.158), transparent 6%),
-              linear-gradient(160deg, var(--bg-1), var(--bg-2));  padding: 80px 20px;
-  display: flex;
-  align-items: center;
+/* Admin Home Page - Glassmorphism Design */
+:root {
+  --bg-gradient: linear-gradient(120deg, #940dae, #1e1a54);
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-hover: rgba(255, 255, 255, 0.25);
+  --primary-purple: #b57fff;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+  --bronze: #cd7f32;
 }
 
-/* Text */
+.admin-section {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #940dae, #1e1a54);
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background */
+.admin-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(181, 127, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Heading */
 .panel-title {
-  color: #fff;
+  color: #ffffff;
   font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 10px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 0 0 20px rgba(181, 127, 255, 0.5);
 }
 
 .panel-subtitle {
-  color: #dcdcdc;
-  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
   margin-bottom: 50px;
+  font-weight: 400;
 }
 
-/* Action Buttons */
+/* Action Buttons - Glass Style */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -43,64 +66,145 @@
 }
 
 .admin-btn {
-  padding: 12px 28px;
-  border-radius: 30px;
+  padding: 16px 35px;
+  border-radius: 50px;
   font-weight: 600;
   text-decoration: none;
-  font-size: 1.05rem;
-  transition: 0.3s;
-  border: 2px solid transparent;
-  color: #fff;
+  font-size: 1.1rem;
+  transition: all 0.4s ease;
+  border: 2px solid var(--glass-border);
+  color: #ffffff;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.settings { background: #0077ff; }
-.call { background: #00b894; }
-.result { background: #ff7675; }
-.publish { background: #f1c40f; color: #222; }
-
-.admin-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+.admin-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
-/* Team Cards */
+.admin-btn:hover::before {
+  left: 100%;
+}
+
+.admin-btn.settings {
+  background: linear-gradient(135deg, rgba(0, 119, 255, 0.3), rgba(0, 119, 255, 0.15));
+  border-color: rgba(0, 119, 255, 0.5);
+}
+
+.admin-btn.settings:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 119, 255, 0.4);
+  border-color: rgba(0, 119, 255, 0.8);
+}
+
+.admin-btn.call {
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.3), rgba(0, 184, 148, 0.15));
+  border-color: rgba(0, 184, 148, 0.5);
+}
+
+.admin-btn.call:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 184, 148, 0.4);
+  border-color: rgba(0, 184, 148, 0.8);
+}
+
+.admin-btn.publish {
+  background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(241, 196, 15, 0.15));
+  border-color: rgba(241, 196, 15, 0.6);
+  color: #000;
+}
+
+.admin-btn.publish:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(241, 196, 15, 0.4);
+  border-color: rgba(241, 196, 15, 0.9);
+  color: #000;
+}
+
+/* Team Cards Grid */
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 25px;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .team-card {
-  background: rgba(255,255,255,0.12);
-  border-radius: 18px;
-  padding: 40px 20px;
-  color: #fff;
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-  transition: 0.4s;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255,255,255,0.25);
+  background: var(--glass-bg);
+  border-radius: 20px;
+  padding: 35px 25px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--glass-border);
+  transition: all 0.4s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--primary-purple), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .team-card:hover {
-  transform: scale(1.07);
-  border-color: #ffc107;
-  box-shadow: 0 0 15px #ffc107;
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--primary-purple);
+  box-shadow: 0 15px 40px rgba(149, 58, 185, 0.5);
+  background: var(--glass-hover);
 }
 
 .team-card h3 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 8px;
-  color: #ffc107;
-}
-.team-card p {
-  font-size: 0.9rem;
+  margin-bottom: 20px;
+  color: var(--gold);
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-/* Fade-in animation */
+.team-card .btn {
+  padding: 12px 25px;
+  border-radius: 25px;
+  background: rgba(181, 127, 255, 0.2);
+  border: 2px solid var(--primary-purple);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.team-card .btn:hover {
+  background: var(--primary-purple);
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(181, 127, 255, 0.5);
+}
+
+/* Fade-in Animation */
 .fade-in-up {
   opacity: 0;
   transform: translateY(30px);
@@ -110,4 +214,56 @@
 .fade-in-up.in-view {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .panel-title {
+    font-size: 2.2rem;
+  }
+  
+  .panel-subtitle {
+    font-size: 1rem;
+    margin-bottom: 40px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .admin-btn {
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 30px;
+  }
+  
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .team-card {
+    padding: 30px 20px;
+  }
+  
+  .team-card h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-section {
+    padding: 40px 15px;
+  }
+  
+  .panel-title {
+    font-size: 1.8rem;
+  }
+  
+  .team-card h3 {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
 }

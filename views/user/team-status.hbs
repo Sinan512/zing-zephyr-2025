@@ -1,0 +1,54 @@
+<link rel="stylesheet" href="/stylesheets/team-status.css">
+
+<div class="team-status-container">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <h2 class="page-title text-center mb-4">
+          <i class="bi bi-trophy-fill"></i> Team Status
+        </h2>
+
+        {{#if programCount}}
+        <p class="program-count-badge text-center mb-4">
+          After {{programCount}} program{{#if (neq programCount 1)}}s{{/if}}
+        </p>
+        {{/if}}
+
+        {{#if publishedTeams}}
+          <div class="teams-leaderboard row g-4">
+            {{#each publishedTeams}}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="team-status-card {{#if (eq @index 0)}}rank-first{{else if (eq @index 1)}}rank-second{{else if (eq @index 2)}}rank-third{{else}}rank-normal{{/if}}">
+                <div class="rank-badge-large">
+                  {{#if (eq @index 0)}}
+                    🥇
+                  {{else if (eq @index 1)}}
+                    🥈
+                  {{else if (eq @index 2)}}
+                    🥉
+                  {{else}}
+                    #{{inc @index}}
+                  {{/if}}
+                </div>
+                <div class="team-info-content">
+                  <h3 class="team-status-name">{{this.team}}</h3>
+                  <div class="points-section">
+                    <span class="points-label">Total Points</span>
+                    <span class="points-value-large">{{this.totalPoints}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>Team points not published yet. Check back soon!</p>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+

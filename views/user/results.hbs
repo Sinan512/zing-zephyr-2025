@@ -1,0 +1,156 @@
+<link rel="stylesheet" href="/stylesheets/user-results.css">
+
+<div class="user-results-container">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <h2 class="page-title text-center mb-4">
+          <i class="bi bi-trophy-fill"></i> Published Results
+        </h2>
+
+        <!-- Search Bar -->
+        <div class="search-container mb-4">
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+              type="text" 
+              id="programSearchInput" 
+              class="program-search-input" 
+              placeholder="🔍 Search by Program Name..." 
+              autocomplete="off"
+            />
+            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" onclick="clearSearch()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="search-info" id="searchInfo">
+            <span id="resultCount">{{publishedResults.length}}</span> program result(s) found
+          </div>
+        </div>
+
+        <!-- Results Grid -->
+        {{#if publishedResults}}
+          <div class="row g-4" id="resultsGrid">
+            {{#each publishedResults}}
+            <div class="col-12 col-md-6 col-lg-4 result-item" data-program="{{this.programName}}">
+              <div class="result-card">
+                <div class="publish-order-badge">#{{this.publishOrder}}</div>
+                <div class="card-header">
+                  <h3 class="program-title">{{this.programName}}</h3>
+                  <span class="zone-badge">{{this.zone}}</span>
+                </div>
+                <div class="card-body">
+                  {{#if this.top3}}
+                    {{#if (length this.top3)}}
+                    <div class="winners-container">
+                      {{#each this.top3}}
+                      {{#if (eq this.position 1)}}
+                      <!-- First Prize -->
+                      <div class="winner-card winner-first">
+                        <div class="prize-icon">🥇</div>
+                        <div class="winner-info">
+                          <span class="prize-label">First Prize</span>
+                          <h4 class="winner-name">{{this.participant}}</h4>
+                          <span class="winner-team">{{this.team}}</span>
+                        </div>
+                      </div>
+                      {{/if}}
+                      {{#if (eq this.position 2)}}
+                      <!-- Second Prize -->
+                      <div class="winner-card winner-second">
+                        <div class="prize-icon">🥈</div>
+                        <div class="winner-info">
+                          <span class="prize-label">Second Prize</span>
+                          <h4 class="winner-name">{{this.participant}}</h4>
+                          <span class="winner-team">{{this.team}}</span>
+                        </div>
+                      </div>
+                      {{/if}}
+                      {{#if (eq this.position 3)}}
+                      <!-- Third Prize -->
+                      <div class="winner-card winner-third">
+                        <div class="prize-icon">🥉</div>
+                        <div class="winner-info">
+                          <span class="prize-label">Third Prize</span>
+                          <h4 class="winner-name">{{this.participant}}</h4>
+                          <span class="winner-team">{{this.team}}</span>
+                        </div>
+                      </div>
+                      {{/if}}
+                      {{/each}}
+                    </div>
+                    {{else}}
+                    <div class="no-winners">
+                      <p>No participants yet</p>
+                    </div>
+                    {{/if}}
+                  {{else}}
+                    <div class="no-winners">
+                      <p>No participants yet</p>
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No results published yet. Check back soon!</p>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  let searchTimeout;
+  $('#programSearchInput').on('keyup input', function () {
+    const searchValue = $(this).val().trim().toLowerCase();
+    
+    // Show/hide clear button
+    if (searchValue.length > 0) {
+      $('#clearSearchBtn').fadeIn(200);
+    } else {
+      $('#clearSearchBtn').fadeOut(200);
+    }
+
+    // Debounce search
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      $('.result-item').each(function() {
+        const programName = $(this).data('program').toLowerCase();
+        if (programName.includes(searchValue)) {
+          $(this).fadeIn(300);
+        } else {
+          $(this).fadeOut(300);
+        }
+      });
+      
+      // Update result count
+      const visibleCount = $('.result-item:visible').length;
+      const totalCount = $('.result-item').length;
+      
+      if (searchValue.length > 0) {
+        $('#resultCount').text(visibleCount);
+        $('#searchInfo').html(`<span id="resultCount">${visibleCount}</span> of <span>${totalCount}</span> program result(s) found`);
+      } else {
+        $('#resultCount').text(totalCount);
+        $('#searchInfo').html(`<span id="resultCount">${totalCount}</span> program result(s) found`);
+      }
+    }, 300);
+  });
+
+  function clearSearch() {
+    $('#programSearchInput').val('');
+    $('#clearSearchBtn').fadeOut(200);
+    $('.result-item').fadeIn(300);
+    const totalCount = $('.result-item').length;
+    $('#resultCount').text(totalCount);
+    $('#searchInfo').html(`<span id="resultCount">${totalCount}</span> program result(s) found`);
+  }
+</script>
+

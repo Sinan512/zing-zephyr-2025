@@ -25,9 +25,8 @@
         </div>
         <div class="col-12 col-md-6 col-lg-4">
           <button 
-            class="btn btn-action w-100 {{#if teamPointsPublished}}btn-disabled{{/if}}" 
+            class="btn btn-action w-100" 
             onclick="publishTeamPoints()"
-            {{#if teamPointsPublished}}disabled{{/if}}
           >
             <i class="bi bi-trophy"></i> Publish Team Points
           </button>
@@ -68,7 +67,7 @@
                           <td>{{this.participant}}</td>
                           <td>{{this.team}}</td>
                           <td>{{this.grade}}</td>
-                          <td><strong>{{this.point}}</strong></td>
+                          <td><strong>{{this.mark}}</strong></td>
                         </tr>
                         {{/each}}
                       </tbody>
@@ -141,7 +140,7 @@
                           <td>{{this.participant}}</td>
                           <td>{{this.team}}</td>
                           <td>{{this.grade}}</td>
-                          <td><strong>{{this.point}}</strong></td>
+                          <td><strong>{{this.mark}}</strong></td>
                         </tr>
                         {{/each}}
                       </tbody>

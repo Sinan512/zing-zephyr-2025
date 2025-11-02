@@ -14,12 +14,28 @@ router.get('/results', async function(req, res, next) {
   let fName = await programHelper.GetFestName();
   fName = fName[0] ? fName[0].festName : 'Zing Zephyr 2025';
   
-  // Get published results
-  const publishedResults = await resultHelper.getPublishedResults();
+  // Get published results with only top 3 participants
+  const publishedResults = await resultHelper.getPublishedResultsTop3();
   
-  res.render('user/view-results', { 
+  res.render('user/results', { 
     fName, 
     publishedResults: publishedResults || []
+  });
+});
+
+router.get('/team-status', async function(req, res, next) {
+  let fName = await programHelper.GetFestName();
+  fName = fName[0] ? fName[0].festName : 'Zing Zephyr 2025';
+  
+  // Get published team points with program count
+  const publishedTeamData = await resultHelper.getPublishedTeamPoints();
+  const publishedTeams = publishedTeamData.teams || [];
+  const programCount = publishedTeamData.programCount || 0;
+  
+  res.render('user/team-status', { 
+    fName, 
+    publishedTeams: publishedTeams || [],
+    programCount: programCount
   });
 });
 
@@ -30,10 +46,10 @@ router.get('/user/enter', async function(req, res, next) {
   // Get published results
   const publishedResults = await resultHelper.getPublishedResults();
   
-  // Get published team points
-  const database = await connectDB();
-  const publishedTeamData = await database.collection(collections.PUBLISHED_TEAM).findOne();
-  const publishedTeams = publishedTeamData ? publishedTeamData.teams : [];
+  // Get published team points with program count
+  const publishedTeamData = await resultHelper.getPublishedTeamPoints();
+  const publishedTeams = publishedTeamData.teams || [];
+  const programCount = publishedTeamData.programCount || 0;
   
   // Get all teams for display
   const teams = await programHelper.viewAllTeamData();
@@ -42,6 +58,7 @@ router.get('/user/enter', async function(req, res, next) {
     fName, 
     publishedResults: publishedResults || [],
     publishedTeams: publishedTeams || [],
+    programCount: programCount,
     teams: teams || []
   });
 });

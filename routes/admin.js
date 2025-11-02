@@ -3,44 +3,99 @@ var router = express.Router();
 const programHelper = require("../helpers/program-helper");
 const callListHelper = require("../helpers/callList-helper");
 const resultHelper = require("../helpers/result-helper");
+const authHelper = require("../helpers/auth-helper");
+
+// Middleware to check if admin is logged in and refresh session
+const requireAuth = async (req, res, next) => {
+  if (!authHelper.isSessionValid(req)) {
+    req.session.destroy();
+    return res.redirect("/admin/login");
+  }
+  // Refresh last activity on each request
+  req.session.lastActivity = Date.now();
+  next();
+};
+
+// Initialize admin credentials on first load
+authHelper.initializeAdmin();
 
 /* GET home page. */
 router.get("/", (req, res) => {
   res.render("admin/cover", { cover: true });
 });
 
-router.get("/enter", async (req, res) => {
+// Login routes
+router.get("/login", (req, res) => {
+  // If already logged in, redirect to home
+  if (authHelper.isSessionValid(req)) {
+    return res.redirect("/admin/enter");
+  }
+  res.render("admin/login", { cover: true });
+});
+
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  
+  const isValid = await authHelper.verifyAdmin(username, password);
+  
+  if (isValid) {
+    req.session.adminLoggedIn = true;
+    req.session.lastActivity = Date.now();
+    res.redirect("/admin/enter");
+  } else {
+    res.render("admin/login", { cover: true, error: "Invalid username or password" });
+  }
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/admin/login");
+});
+
+router.get("/enter", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   var teams = await programHelper.viewAllTeamData();
   fName = fName[0].festName;
   res.render("admin/home", { admin: true, fName, teams });
 });
 
-router.get("/settings", async (req, res) => {
+router.get("/settings", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   var teams = await programHelper.viewAllTeamData();
   var programs = await programHelper.viewPrograms();
-  res.render("admin/settings", { admin: true, fName, teams, programs });
+  const success = req.query.success || null;
+  const error = req.query.error || null;
+  res.render("admin/settings", { admin: true, fName, teams, programs, success, error });
 });
 
-router.post("/update-fest-name", async (req, res) => {
+router.post("/update-fest-name", requireAuth, async (req, res) => {
   await programHelper.setFestName(req.body);
 });
 
-router.post("/add-team", async (req, res) => {
+router.post("/reset-credentials", requireAuth, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    await authHelper.updateAdmin(username, password);
+    res.redirect("/admin/settings?success=Credentials updated successfully");
+  } catch (error) {
+    res.redirect("/admin/settings?error=Failed to update credentials");
+  }
+});
+
+router.post("/add-team", requireAuth, async (req, res) => {
   var teamName = { ...req.body };
   if (req.body) await programHelper.addTeams(teamName);
   res.redirect("back");
 });
 
-router.post("/add-program", async (req, res) => {
+router.post("/add-program", requireAuth, async (req, res) => {
   var program = { ...req.body };
   if (program) await programHelper.addPrograms(program);
   res.redirect("/admin/settings");
 });
 
-router.get("/add-members/:TName", async (req, res) => {
+router.get("/add-members/:TName", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   var teamName = req.params.TName;
@@ -64,7 +119,7 @@ router.get("/add-members/:TName", async (req, res) => {
   });
 });
 
-router.post("/add-members/:TName", async (req, res) => {
+router.post("/add-members/:TName", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   var teamName = req.params.TName;
@@ -74,7 +129,7 @@ router.post("/add-members/:TName", async (req, res) => {
   res.redirect(`/admin/add-members/${teamName}`);
 });
 
-router.get("/call-list", async (req, res) => {
+router.get("/call-list", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   var teams = await programHelper.viewAllTeamData();
@@ -113,7 +168,7 @@ router.get("/get-members/:teamName/:zone", async (req, res) => {
   res.json(zoneMembers);
 });
 
-router.post("/add-call-list", async (req, res) => {
+router.post("/add-call-list", requireAuth, async (req, res) => {
   const {program,team,member}=req.body
   let members = member;
 if (!Array.isArray(members)) {
@@ -135,10 +190,10 @@ if (!Array.isArray(members)) {
       }));
     });
     
-  res.render("admin/call-list", { admin: true, fName, teams, programs ,groupedCallList});
+  res.render("admin/call-list", { admin: true, codeLetter: true, fName, teams, programs ,groupedCallList});
 });
 
-router.get("/code-letter-add",async(req,res)=>{
+router.get("/code-letter-add", requireAuth, async(req,res)=>{
   
    let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
@@ -155,7 +210,7 @@ router.get("/code-letter-add",async(req,res)=>{
   res.render("admin/code-letter-add",{admin:true, fName, programs ,groupedCallList});
 });
 
-router.post('/add-code-letter',async(req,res)=>{
+router.post('/add-code-letter', requireAuth, async(req,res)=>{
   const { program } = req.body;
     const codes = [];
     // Convert the nested form data into an array
@@ -174,7 +229,7 @@ router.post('/add-code-letter',async(req,res)=>{
     res.send(result); // sending simple response object (like your other routes)
 });
 
-router.get("/edit-result",async(req,res)=>{
+router.get("/edit-result", requireAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   var programs = await programHelper.viewCallListPrograms();
@@ -188,7 +243,7 @@ router.get("/edit-result",async(req,res)=>{
   
 res.render("admin/select-program",{admin:true,fName, programs})
 });
-router.get("/add-point/",async(req,res)=>{
+router.get("/add-point/", requireAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   let {programName, zone}=req.query;
@@ -198,13 +253,13 @@ router.get("/add-point/",async(req,res)=>{
   res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
 });
 
-router.post("/save-points",async(req,res)=>{
+router.post("/save-points", requireAuth, async(req,res)=>{
   await resultHelper.addPoint(req.body);
   
     res.redirect('/admin/edit-result');
 });
 
-router.get("/view-result",async (req,res)=>{
+router.get("/view-result", requireAuth, async (req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
 
@@ -223,12 +278,16 @@ router.get("/view-result",async (req,res)=>{
   
   // Get teams sorted by total points
   const teamsByPoints = await resultHelper.getAllTeamsSortedByPoints();
+  
+  // Get published team points data for program count
+  const publishedTeamData = await resultHelper.getPublishedTeamPoints();
+  const programCount = publishedTeamData.programCount || 0;
  
-  res.render("admin/view-results", { admin:true,programs, fName, memberPointsByZone, teamsByPoints });
+  res.render("admin/view-results", { admin:true,programs, fName, memberPointsByZone, teamsByPoints, programCount });
 })
 
 // API endpoint for AJAX search (optional, for dynamic search without page reload)
-router.get("/search-results",async (req,res)=>{
+router.get("/search-results", requireAuth, async (req,res)=>{
   const searchQuery = req.query.q;
   
   if (!searchQuery || searchQuery.trim().length === 0) {
@@ -240,7 +299,7 @@ router.get("/search-results",async (req,res)=>{
 })
 
 // Publish Results Routes
-router.get("/publish", async (req, res) => {
+router.get("/publish", requireAuth, async (req, res) => {
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   
@@ -253,7 +312,7 @@ router.get("/publish", async (req, res) => {
   // Get published results
   const publishedResults = await resultHelper.getPublishedResults();
   
-  // Check if team points are published
+  // Check if team points are published (but allow re-publishing)
   const collections = require("../config/collections");
   const connectDB = require("../config/db");
   const database = await connectDB();
@@ -271,7 +330,7 @@ router.get("/publish", async (req, res) => {
   });
 });
 
-router.post("/publish-program", async (req, res) => {
+router.post("/publish-program", requireAuth, async (req, res) => {
   try {
     const { programName, zone } = req.body;
     const result = await resultHelper.publishProgram(programName, zone);
@@ -285,12 +344,12 @@ router.post("/publish-program", async (req, res) => {
   }
 });
 
-router.post("/publish-team-points", async (req, res) => {
+router.post("/publish-team-points", requireAuth, async (req, res) => {
   try {
     const result = await resultHelper.publishTeamPoints();
     res.json({ 
       success: true, 
-      message: `Team points published successfully! ${result.teamsCount} teams published.`
+      message: `Team points published successfully! ${result.teamsCount} teams published (After ${result.programCount} program${result.programCount !== 1 ? 's' : ''}).`
     });
   } catch (error) {
     res.json({ success: false, message: error.message });

@@ -3,6 +3,106 @@ body{
   background: linear-gradient(135deg, #940dae, #1e1a54);
   min-height: 100vh;
 }
+
+/* Alert Messages */
+.alert {
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  border: 2px solid;
+  backdrop-filter: blur(10px);
+  animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-success {
+  background: rgba(40, 167, 69, 0.2);
+  border-color: rgba(40, 167, 69, 0.6);
+  color: #ffffff;
+}
+
+.alert-danger {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.6);
+  color: #ffffff;
+}
+
+/* Admin Credentials Form */
+.admin-credentials-form {
+  margin-top: 20px;
+}
+
+.admin-credentials-form .input-group {
+  margin-bottom: 20px;
+}
+
+.admin-credentials-form .input-group label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.admin-credentials-form .form-control {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.admin-credentials-form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-credentials-form .form-control:focus {
+  background: rgba(255, 255, 255, 0.25);
+  outline: none;
+  border-color: rgba(181, 127, 255, 0.8);
+  box-shadow: 0 0 20px rgba(149, 58, 185, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-reset-credentials {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(181, 127, 255, 0.8), rgba(149, 58, 185, 0.8));
+  border: 2px solid rgba(181, 127, 255, 0.6);
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-reset-credentials:hover {
+  background: linear-gradient(135deg, rgba(181, 127, 255, 1), rgba(149, 58, 185, 1));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(149, 58, 185, 0.5);
+  border-color: rgba(181, 127, 255, 1);
+}
+
+.btn-reset-credentials i {
+  margin-right: 8px;
+}
 .fest-title {
   color: white;
   font-size: 2.8rem;
