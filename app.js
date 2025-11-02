@@ -22,7 +22,11 @@ app.engine("hbs", engine({
   partialsDir: __dirname + "/views/partials/",
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   helpers: {
-    inc: (v) => v == null ? '' : parseInt(v, 10) + 1
+    inc: (v) => v == null ? '' : parseInt(v, 10) + 1,
+    lookup: (obj, key) => {
+      return obj && obj[key] ? obj[key] : [];
+    },
+    eq: (a, b) => a === b
   }
 }));
 app.set("view engine", "hbs");

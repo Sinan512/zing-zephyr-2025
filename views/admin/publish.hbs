@@ -1,0 +1,284 @@
+<link rel="stylesheet" href="/stylesheets/publish.css">
+
+<div class="container-fluid py-4 publish-container">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Publish Results</h2>
+
+      <!-- Top Action Buttons -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
+          <button 
+            class="btn btn-action w-100 {{#if (eq currentView 'published')}}btn-active{{else}}btn-secondary-action{{/if}}" 
+            onclick="showPublished()"
+          >
+            <i class="bi bi-check-circle"></i> Published
+          </button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
+          <button 
+            class="btn btn-action w-100 {{#unless (eq currentView 'published')}}btn-active{{/unless}}" 
+            onclick="showPending()"
+          >
+            <i class="bi bi-clock"></i> Pending
+          </button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <button 
+            class="btn btn-action w-100 {{#if teamPointsPublished}}btn-disabled{{/if}}" 
+            onclick="publishTeamPoints()"
+            {{#if teamPointsPublished}}disabled{{/if}}
+          >
+            <i class="bi bi-trophy"></i> Publish Team Points
+          </button>
+        </div>
+      </div>
+
+      <!-- Pending Results Section -->
+      <div id="pendingSection" class="results-section {{#if (eq currentView 'published')}}d-none{{/if}}">
+        <h3 class="section-title mb-4">Pending Programs</h3>
+        
+        {{#if pendingResults}}
+          <div class="row g-4">
+            {{#each pendingResults}}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="program-card">
+                <div class="card-header">
+                  <h4 class="program-name">{{this.programName}}</h4>
+                  <span class="zone-badge">{{this.zone}}</span>
+                </div>
+                
+                <div class="card-body">
+                  <h5 class="mb-3">Participants</h5>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-dark">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Participant</th>
+                          <th>Team</th>
+                          <th>Grade</th>
+                          <th>Points</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#each this.results}}
+                        <tr>
+                          <td>{{this.codes}}</td>
+                          <td>{{this.participant}}</td>
+                          <td>{{this.team}}</td>
+                          <td>{{this.grade}}</td>
+                          <td><strong>{{this.point}}</strong></td>
+                        </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Team Points Summary -->
+                <div class="card-footer">
+                  <h6 class="mb-2">Team Points Summary:</h6>
+                  <div class="team-points-grid">
+                    {{#each this.teamPoints}}
+                    <div class="team-point-item">
+                      <span class="team-name">{{@key}}</span>
+                      <span class="points-value">{{this}}</span>
+                    </div>
+                    {{/each}}
+                  </div>
+                  
+                  <button 
+                    class="btn btn-publish w-100 mt-3" 
+                    onclick="publishProgram('{{this.programName}}', '{{this.zone}}')"
+                  >
+                    <i class="bi bi-upload"></i> Publish This
+                  </button>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <p class="text-center">No pending programs to publish</p>
+          </div>
+        {{/if}}
+      </div>
+
+      <!-- Published Results Section -->
+      <div id="publishedSection" class="results-section {{#unless (eq currentView 'published')}}d-none{{/unless}}">
+        <h3 class="section-title mb-4">Published Programs</h3>
+        
+        {{#if publishedResults}}
+          <div class="row g-4">
+            {{#each publishedResults}}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="program-card published-card">
+                <div class="card-header">
+                  <div class="publish-order">#{{this.publishOrder}}</div>
+                  <h4 class="program-name">{{this.programName}}</h4>
+                  <span class="zone-badge">{{this.zone}}</span>
+                </div>
+                
+                <div class="card-body">
+                  <h5 class="mb-3">Participants</h5>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-dark">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Participant</th>
+                          <th>Team</th>
+                          <th>Grade</th>
+                          <th>Points</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#each this.results}}
+                        <tr>
+                          <td>{{this.codes}}</td>
+                          <td>{{this.participant}}</td>
+                          <td>{{this.team}}</td>
+                          <td>{{this.grade}}</td>
+                          <td><strong>{{this.point}}</strong></td>
+                        </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Team Points Summary -->
+                <div class="card-footer">
+                  <h6 class="mb-2">Team Points Summary:</h6>
+                  <div class="team-points-grid">
+                    {{#each this.teamPoints}}
+                    <div class="team-point-item">
+                      <span class="team-name">{{@key}}</span>
+                      <span class="points-value">{{this}}</span>
+                    </div>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <p class="text-center">No programs published yet</p>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPublished() {
+    document.getElementById('pendingSection').classList.add('d-none');
+    document.getElementById('publishedSection').classList.remove('d-none');
+    window.history.pushState({}, '', '/admin/publish?view=published');
+  }
+
+  function showPending() {
+    document.getElementById('publishedSection').classList.add('d-none');
+    document.getElementById('pendingSection').classList.remove('d-none');
+    window.history.pushState({}, '', '/admin/publish?view=pending');
+  }
+
+  function publishProgram(programName, zone) {
+    Swal.fire({
+      title: 'Publish Program?',
+      html: `Are you sure you want to publish:<br><strong>${programName} - ${zone}</strong>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Publish!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/admin/publish-program',
+          method: 'POST',
+          data: { programName, zone },
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Published!',
+                html: response.message,
+                timer: 3000,
+                showConfirmButton: false
+              }).then(() => {
+                location.reload();
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to publish program'
+            });
+          }
+        });
+      }
+    });
+  }
+
+  function publishTeamPoints() {
+    Swal.fire({
+      title: 'Publish Team Points?',
+      html: 'Are you sure you want to publish all team points?<br>This can only be done once.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Publish!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/admin/publish-team-points',
+          method: 'POST',
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Published!',
+                html: response.message,
+                timer: 3000,
+                showConfirmButton: false
+              }).then(() => {
+                location.reload();
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to publish team points'
+            });
+          }
+        });
+      }
+    });
+  }
+</script>
+

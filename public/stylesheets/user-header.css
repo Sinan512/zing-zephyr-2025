@@ -1,6 +1,6 @@
-.admin-header {
+.user-header {
   background: linear-gradient(135deg, #392260, #8b1ccb);
-  padding: 8px 10px 0 10px;
+  padding: 10px 10px 0 10px;
   box-shadow: 0 3px 15px rgba(0,0,0,0.25);
   position: sticky;
   top: 0;
@@ -50,18 +50,20 @@
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
+  margin-bottom: 4px;
 }
 
 .header-nav .nav-btn {
   text-decoration: none;
   font-weight: 600;
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 25px;
   margin-left: 0;
   transition: 0.3s;
   color: #fff;
   white-space: nowrap;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-btn.dark { background: #222; }
@@ -71,6 +73,7 @@
 .header-nav .nav-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Marquee */
@@ -116,7 +119,7 @@
 
 /* Responsive - Mobile */
 @media (max-width: 768px) {
-  .admin-header {
+  .user-header {
     padding: 6px 8px 0 8px;
   }
   
@@ -143,11 +146,12 @@
     width: 100%;
     gap: 4px;
     margin-top: 6px;
+    margin-bottom: 4px;
   }
   
   .header-nav .nav-btn {
-    padding: 6px 12px;
-    font-size: 0.75rem;
+    padding: 8px 14px;
+    font-size: 0.8rem;
     flex: 1;
     text-align: center;
     min-width: 0;
@@ -166,7 +170,7 @@
 
 /* Extra Small Mobile */
 @media (max-width: 576px) {
-  .admin-header {
+  .user-header {
     padding: 5px 6px 0 6px;
   }
   
@@ -186,12 +190,17 @@
     overflow: hidden;
   }
   
+  .header-nav {
+    margin-bottom: 4px;
+  }
+  
   .header-nav .nav-btn {
-    padding: 5px 8px;
-    font-size: 0.7rem;
+    padding: 7px 10px;
+    font-size: 0.75rem;
   }
   
   .header-marquee {
     display: none; /* Hide marquee on very small screens */
   }
 }
+

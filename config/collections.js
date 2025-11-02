@@ -4,5 +4,8 @@ module.exports={
     PROGRAMS:"programs",
     CALL_LISTS:"callLists",
     RESULTS:"results",
-    TEAM_POINTS:"teamPoints"
+    TEAM_POINTS:"teamPoints",
+    PENDING_RESULTS:"pendingResults",
+    PUBLISHED:"published",
+    PUBLISHED_TEAM:"publishedTeam"
 };

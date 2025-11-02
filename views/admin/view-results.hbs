@@ -5,6 +5,26 @@
     <div class="col-lg-10 col-md-11 col-12">
       <h2 class="text-center mb-4">Program Results</h2>
 
+      <!-- Enhanced Search Bar - Above Table -->
+      <div class="search-container mb-4">
+        <div class="search-wrapper">
+          <i class="bi bi-search search-icon"></i>
+          <input 
+            type="text" 
+            id="programSearchInput" 
+            class="program-search-input" 
+            placeholder="🔍 Search by Program Name..." 
+            autocomplete="off"
+          />
+          <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" onclick="clearSearch()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="search-info" id="searchInfo">
+          <span id="resultCount">{{programs.length}}</span> program(s) found
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table id="resultsTable" class="display table table-striped table-hover align-middle text-center" style="width: 100%">
           <thead>
@@ -16,43 +36,11 @@
           </thead>
           <tbody>
             {{#each programs}}
-            <tr>
+            <tr data-details-index="{{@index}}">
               <td>{{this.programName}}</td>
               <td>{{this.zone}}</td>
               <td>
                 <button class="view-btn" onclick="openDetails('{{@index}}')">View Details</button>
-              </td>
-            </tr>
-
-            <!-- Hidden details for popup -->
-            <tr class="details-row" style="display:none;">
-              <td colspan="3">
-                <div id="details-{{@index}}" class="details-content">
-                  <table class="details-table">
-                    <thead>
-                      <tr>
-                        <th>Code</th>
-                        <th>Participant</th>
-                        <th>Team</th>
-                        <th>Grade</th>
-                        <th>Mark</th>
-                        <th>Point</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {{#each this.results}}
-                      <tr>
-                        <td>{{this.codes}}</td>
-                        <td>{{this.participant}}</td>
-                        <td>{{this.team}}</td>
-                        <td>{{this.grade}}</td>
-                        <td>{{this.mark}}</td>
-                        <td>{{this.point}}</td>
-                      </tr>
-                      {{/each}}
-                    </tbody>
-                  </table>
-                </div>
               </td>
             </tr>
             {{/each}}
@@ -60,12 +48,189 @@
         </table>
       </div>
 
-      <!-- Glass Search Bar -->
-      <div class="custom-search-bar mt-3 text-center">
-        <input type="text" id="customSearchInput" placeholder="🔍 Search Program..." />
+      <!-- Member Points by Zone Section -->
+      <div class="member-points-section mt-5">
+        <h3 class="text-center mb-4 section-title">individual Result</h3>
+        
+        <!-- Pre Zone Table -->
+        <div class="zone-table-wrapper mb-4">
+          <h4 class="zone-title">Pre Zone Topper</h4>
+          <div class="table-responsive">
+            <table id="preZoneTable" class="display table table-striped table-hover align-middle text-center zone-table" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Prize</th>
+                  <th>Member Name</th>
+                  <th>Team</th>
+                  <th>Total Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#if memberPointsByZone.preZone}}
+                  {{#each memberPointsByZone.preZone}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{else}}
+                  {{#each memberPointsByZone.["Pre Zone"]}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mid Zone Table -->
+        <div class="zone-table-wrapper mb-4">
+          <h4 class="zone-title">Mid Zone Topper</h4>
+          <div class="table-responsive">
+            <table id="midZoneTable" class="display table table-striped table-hover align-middle text-center zone-table" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Prize</th>
+                  <th>Member Name</th>
+                  <th>Team</th>
+                  <th>Total Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#if memberPointsByZone.midZone}}
+                  {{#each memberPointsByZone.midZone}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{else}}
+                  {{#each memberPointsByZone.["Mid Zone"]}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- High Zone Table -->
+        <div class="zone-table-wrapper mb-4">
+          <h4 class="zone-title">High Zone Topper</h4>
+          <div class="table-responsive">
+            <table id="highZoneTable" class="display table table-striped table-hover align-middle text-center zone-table" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Prize</th>
+                  <th>Member Name</th>
+                  <th>Team</th>
+                  <th>Total Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#if memberPointsByZone.highZone}}
+                  {{#each memberPointsByZone.highZone}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{else}}
+                  {{#each memberPointsByZone.["High Zone"]}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td>{{this.member}}</td>
+                    <td>{{this.team}}</td>
+                    <td><strong>{{this.points}}</strong></td>
+                  </tr>
+                  {{/each}}
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Points Leaderboard Section -->
+      <div class="team-points-section mt-5">
+        <h3 class="text-center mb-4 section-title">Team Points Leaderboard</h3>
+        <div class="teams-container row g-4">
+          {{#each teamsByPoints}}
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="team-card {{#if (eq @index 0)}}gold-card{{else if (eq @index 1)}}silver-card{{else if (eq @index 2)}}bronze-card{{else}}normal-card{{/if}}" data-rank="{{inc @index}}">
+              <div class="card-rank">
+                {{#if (eq @index 0)}}
+                  🥇
+                {{else if (eq @index 1)}}
+                  🥈
+                {{else if (eq @index 2)}}
+                  🥉
+                {{else}}
+                  #{{inc @index}}
+                {{/if}}
+              </div>
+              <div class="card-content">
+                <h4 class="team-name">{{this.team}}</h4>
+                <div class="points-display">
+                  <span class="points-label">Total Points</span>
+                  <span class="points-value">{{this.totalPoints}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {{/each}}
+        </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Hidden container for details (outside table to avoid DataTables issues) -->
+<div id="detailsContainer" style="display: none;">
+  {{#each programs}}
+  <div id="details-{{@index}}" class="details-content">
+    <table class="details-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Participant</th>
+          <th>Team</th>
+          <th>Grade</th>
+          <th>Mark</th>
+          <th>Point</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this.results}}
+        <tr>
+          <td>{{this.codes}}</td>
+          <td>{{this.participant}}</td>
+          <td>{{this.team}}</td>
+          <td>{{this.grade}}</td>
+          <td>{{this.mark}}</td>
+          <td>{{this.point}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{/each}}
 </div>
 
 <!-- Popup Modal -->
@@ -77,33 +242,223 @@
 </div>
 
 <script>
-  $(document).ready(function () {
-    // Hide details rows so DataTables ignores them
-    $('#resultsTable tbody tr.details-row').hide();
+  let table; // Global variable for DataTable instance
 
-    const table = $('#resultsTable').DataTable({
-      searching: true,
-      pageLength: 7,
-      lengthMenu: [5, 7, 10, 15],
+  $(document).ready(function () {
+    // Initialize DataTable
+    table = $('#resultsTable').DataTable({
+      searching: true, // Enable searching (we'll customize it)
+      pageLength: 10,
+      lengthMenu: [5, 10, 15, 20, 25, 50],
       responsive: true,
+      order: [[0, 'asc']], // Sort by Program Name by default
       language: {
         lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ programs",
+        infoEmpty: "No programs available",
+        infoFiltered: "(filtered from _MAX_ total programs)",
         paginate: {
           next: "Next ➜",
           previous: "⬅ Prev"
+        },
+        emptyTable: "No program results found",
+        search: "" // Hide default search box
+      },
+      columnDefs: [
+        {
+          targets: [0], // Program Name column
+          searchable: true
+        },
+        {
+          targets: [1], // Zone column
+          searchable: true
+        },
+        {
+          targets: [2], // Action column
+          searchable: false,
+          orderable: false
         }
-      }
+      ],
+      // Hide default DataTables search box - removed 'f' from dom to hide filter/search box
+      dom: 'lrtip'
     });
 
-    // Custom search
-    $('#customSearchInput').on('keyup', function () {
-      table.search(this.value).draw();
+    // Hide DataTables default search box if it still appears
+    $('.dataTables_filter').hide();
+
+    // Enhanced Program Name Search
+    let searchTimeout;
+    $('#programSearchInput').on('keyup input', function () {
+      const searchValue = $(this).val().trim();
+      
+      // Show/hide clear button
+      if (searchValue.length > 0) {
+        $('#clearSearchBtn').fadeIn(200);
+      } else {
+        $('#clearSearchBtn').fadeOut(200);
+      }
+
+      // Debounce search for better performance
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(function() {
+        // Perform search - DataTables will search in all searchable columns
+        table.search(searchValue).draw();
+        
+        // Update result count after search
+        setTimeout(updateResultCount, 100);
+      }, 300); // 300ms debounce
     });
+
+    // Update result count on page change, search, etc.
+    table.on('draw', function() {
+      updateResultCount();
+    });
+
+    // Initial result count
+    updateResultCount();
+
+    // Initialize Member Points DataTables for each zone
+    const preZoneTable = $('#preZoneTable').DataTable({
+      searching: true,
+      pageLength: 10,
+      lengthMenu: [5, 10, 15, 20, 25],
+      order: [[3, 'desc']], // Sort by Points descending
+      responsive: true,
+      language: {
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ members",
+        infoEmpty: "No members in Pre Zone",
+        paginate: {
+          next: "Next ➜",
+          previous: "⬅ Prev"
+        },
+        emptyTable: "No members found in Pre Zone"
+      },
+      columnDefs: [
+        { targets: [0], orderable: false }, // Rank column
+        { targets: [3], orderable: true } // Points column
+      ],
+      dom: 'lrtip'
+    });
+    $('.dataTables_filter').hide(); // Hide default search for zone tables
+
+    const midZoneTable = $('#midZoneTable').DataTable({
+      searching: true,
+      pageLength: 10,
+      lengthMenu: [5, 10, 15, 20, 25],
+      order: [[3, 'desc']], // Sort by Points descending
+      responsive: true,
+      language: {
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ members",
+        infoEmpty: "No members in Mid Zone",
+        paginate: {
+          next: "Next ➜",
+          previous: "⬅ Prev"
+        },
+        emptyTable: "No members found in Mid Zone"
+      },
+      columnDefs: [
+        { targets: [0], orderable: false }, // Rank column
+        { targets: [3], orderable: true } // Points column
+      ],
+      dom: 'lrtip'
+    });
+    $('.dataTables_filter').hide(); // Hide default search for zone tables
+
+    const highZoneTable = $('#highZoneTable').DataTable({
+      searching: true,
+      pageLength: 10,
+      lengthMenu: [5, 10, 15, 20, 25],
+      order: [[3, 'desc']], // Sort by Points descending
+      responsive: true,
+      language: {
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ members",
+        infoEmpty: "No members in High Zone",
+        paginate: {
+          next: "Next ➜",
+          previous: "⬅ Prev"
+        },
+        emptyTable: "No members found in High Zone"
+      },
+      columnDefs: [
+        { targets: [0], orderable: false }, // Rank column
+        { targets: [3], orderable: true } // Points column
+      ],
+      dom: 'lrtip'
+    });
+    $('.dataTables_filter').hide(); // Hide default search for zone tables
+
+    // Update rank numbers after sorting (removing medal emojis first)
+    function updateRankNumbers() {
+      $('#preZoneTable tbody tr').each(function(index) {
+        const rankCell = $(this).find('td:first');
+        rankCell.text(index + 1);
+        // Add medal emojis for top 3
+        if (index === 0) rankCell.html('🥇 ' + (index + 1));
+        else if (index === 1) rankCell.html('🥈 ' + (index + 1));
+        else if (index === 2) rankCell.html('🥉 ' + (index + 1));
+      });
+      $('#midZoneTable tbody tr').each(function(index) {
+        const rankCell = $(this).find('td:first');
+        rankCell.text(index + 1);
+        if (index === 0) rankCell.html('🥇 ' + (index + 1));
+        else if (index === 1) rankCell.html('🥈 ' + (index + 1));
+        else if (index === 2) rankCell.html('🥉 ' + (index + 1));
+      });
+      $('#highZoneTable tbody tr').each(function(index) {
+        const rankCell = $(this).find('td:first');
+        rankCell.text(index + 1);
+        if (index === 0) rankCell.html('🥇 ' + (index + 1));
+        else if (index === 1) rankCell.html('🥈 ' + (index + 1));
+        else if (index === 2) rankCell.html('🥉 ' + (index + 1));
+      });
+    }
+
+    // Initial rank update
+    updateRankNumbers();
+
+    preZoneTable.on('draw', updateRankNumbers);
+    midZoneTable.on('draw', updateRankNumbers);
+    highZoneTable.on('draw', updateRankNumbers);
   });
+
+  function updateResultCount() {
+    if (!table) return;
+    
+    const info = table.page.info();
+    const filteredCount = info.recordsDisplay;
+    const totalCount = info.recordsTotal;
+    const searchValue = $('#programSearchInput').val().trim();
+    
+    if (searchValue.length > 0) {
+      $('#resultCount').text(filteredCount);
+      $('#searchInfo').html(`<span id="resultCount">${filteredCount}</span> of <span>${totalCount}</span> program(s) found`);
+    } else {
+      $('#resultCount').text(totalCount);
+      $('#searchInfo').html(`<span id="resultCount">${totalCount}</span> program(s) found`);
+    }
+  }
+
+  // Clear search function
+  function clearSearch() {
+    $('#programSearchInput').val('');
+    $('#clearSearchBtn').fadeOut(200);
+    if (table) {
+      table.search('').draw();
+      setTimeout(updateResultCount, 100);
+    }
+  }
 
   // Open Modal with details
   function openDetails(index) {
     const content = document.getElementById("details-" + index);
+    if (!content) {
+      console.error("Details content not found for index:", index);
+      return;
+    }
+    
     const modalBody = document.getElementById("modalBody");
     modalBody.innerHTML = content.innerHTML; // Copy inner content
 

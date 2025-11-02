@@ -208,9 +208,93 @@ router.get("/view-result",async (req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
 
-  const programs = await resultHelper.viewAllResult();
- console.log(programs);
+  // Check if search query is provided
+  const searchQuery = req.query.search;
+  let programs;
+  
+  if (searchQuery && searchQuery.trim().length > 0) {
+    programs = await resultHelper.searchResultsByName(searchQuery.trim());
+  } else {
+    programs = await resultHelper.viewAllResult();
+  }
+
+  // Get member points grouped by zone
+  const memberPointsByZone = await programHelper.getAllMemberPointsByZone();
+  
+  // Get teams sorted by total points
+  const teamsByPoints = await resultHelper.getAllTeamsSortedByPoints();
  
-  res.render("admin/view-results", { admin:true,programs, fName });
+  res.render("admin/view-results", { admin:true,programs, fName, memberPointsByZone, teamsByPoints });
 })
+
+// API endpoint for AJAX search (optional, for dynamic search without page reload)
+router.get("/search-results",async (req,res)=>{
+  const searchQuery = req.query.q;
+  
+  if (!searchQuery || searchQuery.trim().length === 0) {
+    return res.json([]);
+  }
+  
+  const programs = await resultHelper.searchResultsByName(searchQuery.trim());
+  res.json(programs);
+})
+
+// Publish Results Routes
+router.get("/publish", async (req, res) => {
+  let fName = await programHelper.GetFestName();
+  fName = fName[0].festName;
+  
+  // Initialize pending results if needed (on first visit)
+  await resultHelper.initializePendingResults();
+  
+  // Get pending results
+  const pendingResults = await resultHelper.getPendingResults();
+  
+  // Get published results
+  const publishedResults = await resultHelper.getPublishedResults();
+  
+  // Check if team points are published
+  const collections = require("../config/collections");
+  const connectDB = require("../config/db");
+  const database = await connectDB();
+  const teamPointsPublished = await database.collection(collections.PUBLISHED_TEAM).findOne();
+  
+  const view = req.query.view || 'pending'; // pending or published
+  
+  res.render("admin/publish", { 
+    admin: true, 
+    fName, 
+    pendingResults, 
+    publishedResults,
+    teamPointsPublished: !!teamPointsPublished,
+    currentView: view
+  });
+});
+
+router.post("/publish-program", async (req, res) => {
+  try {
+    const { programName, zone } = req.body;
+    const result = await resultHelper.publishProgram(programName, zone);
+    res.json({ 
+      success: true, 
+      message: `Program "${programName} - ${zone}" published successfully as #${result.publishOrder}!`,
+      publishOrder: result.publishOrder
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+router.post("/publish-team-points", async (req, res) => {
+  try {
+    const result = await resultHelper.publishTeamPoints();
+    res.json({ 
+      success: true, 
+      message: `Team points published successfully! ${result.teamsCount} teams published.`
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

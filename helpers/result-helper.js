@@ -194,8 +194,168 @@ for (const r of results) {
     var db=await connectDB();
     return await db.collection(collections.RESULTS).find().toArray();
   },
+  searchResultsByName:async(searchQuery)=>{
+    var db=await connectDB();
+    // Case-insensitive search for program name
+    const regex = new RegExp(searchQuery, 'i');
+    return await db.collection(collections.RESULTS).find({
+      programName: { $regex: regex }
+    }).toArray();
+  },
   viewTeamStatus:async()=>{
     var db=await connectDB();
     return await db.collection(collections.TEAM_POINTS).find().toArray();
+  },
+  getAllTeamsSortedByPoints:async()=>{
+    var db=await connectDB();
+    const teams = await db.collection(collections.TEAM_POINTS).find().toArray();
+    
+    // Sort teams by totalPoints (descending - highest first)
+    const sortedTeams = teams
+      .map(team => ({
+        team: team.team,
+        totalPoints: team.totalPoints || 0
+      }))
+      .sort((a, b) => b.totalPoints - a.totalPoints);
+    
+    return sortedTeams;
+  },
+  // Initialize pending results from all results
+  initializePendingResults:async()=>{
+    var db=await connectDB();
+    const allResults = await db.collection(collections.RESULTS).find().toArray();
+    
+    // Check if pending results already initialized
+    const existingCount = await db.collection(collections.PENDING_RESULTS).countDocuments();
+    if (existingCount > 0) {
+      return { message: "Pending results already initialized", count: existingCount };
+    }
+    
+    // Add all results to pendingResults
+    if (allResults.length > 0) {
+      await db.collection(collections.PENDING_RESULTS).insertMany(allResults);
+    }
+    
+    return { message: "Pending results initialized", count: allResults.length };
+  },
+  // Get pending results with team points for each program
+  getPendingResults:async()=>{
+    var db=await connectDB();
+    const pending = await db.collection(collections.PENDING_RESULTS).find().toArray();
+    
+    // Get team points to calculate per-program totals
+    const teamPoints = await db.collection(collections.TEAM_POINTS).find().toArray();
+    
+    // Add team point totals for each program
+    const resultsWithTeamPoints = pending.map(result => {
+      const programTeamPoints = {};
+      
+      // Calculate team points from results
+      if (result.results && Array.isArray(result.results)) {
+        result.results.forEach(r => {
+          if (!programTeamPoints[r.team]) {
+            programTeamPoints[r.team] = 0;
+          }
+          programTeamPoints[r.team] += r.mark || 0;
+        });
+      }
+      
+      return {
+        ...result,
+        teamPoints: programTeamPoints
+      };
+    });
+    
+    return resultsWithTeamPoints;
+  },
+  // Publish a program result
+  publishProgram:async(programName, zone)=>{
+    var db=await connectDB();
+    
+    // Get the result from pending
+    const pendingResult = await db.collection(collections.PENDING_RESULTS).findOne({
+      programName: programName,
+      zone: zone
+    });
+    
+    if (!pendingResult) {
+      throw new Error("Program result not found in pending results");
+    }
+    
+    // Get next publish order number
+    const publishedCount = await db.collection(collections.PUBLISHED).countDocuments();
+    const publishOrder = publishedCount + 1;
+    
+    // Add to published collection with order number
+    await db.collection(collections.PUBLISHED).insertOne({
+      ...pendingResult,
+      publishOrder: publishOrder,
+      publishedAt: new Date()
+    });
+    
+    // Remove from pending
+    await db.collection(collections.PENDING_RESULTS).deleteOne({
+      programName: programName,
+      zone: zone
+    });
+    
+    return { success: true, publishOrder };
+  },
+  // Get published results
+  getPublishedResults:async()=>{
+    var db=await connectDB();
+    const published = await db.collection(collections.PUBLISHED).find().sort({ publishOrder: 1 }).toArray();
+    
+    // Add team point totals for each program
+    const resultsWithTeamPoints = published.map(result => {
+      const programTeamPoints = {};
+      
+      // Calculate team points from results
+      if (result.results && Array.isArray(result.results)) {
+        result.results.forEach(r => {
+          if (!programTeamPoints[r.team]) {
+            programTeamPoints[r.team] = 0;
+          }
+          programTeamPoints[r.team] += r.mark || 0;
+        });
+      }
+      
+      return {
+        ...result,
+        teamPoints: programTeamPoints
+      };
+    });
+    
+    return resultsWithTeamPoints;
+  },
+  // Publish team points
+  publishTeamPoints:async()=>{
+    var db=await connectDB();
+    
+    // Check if already published
+    const existing = await db.collection(collections.PUBLISHED_TEAM).findOne();
+    if (existing) {
+      throw new Error("Team points already published");
+    }
+    
+    // Get current team points
+    const teamPoints = await db.collection(collections.TEAM_POINTS).find().toArray();
+    
+    // Sort by total points
+    const sortedTeams = teamPoints
+      .map(team => ({
+        team: team.team,
+        totalPoints: team.totalPoints || 0,
+        programs: team.programs || []
+      }))
+      .sort((a, b) => b.totalPoints - a.totalPoints);
+    
+    // Add to published team collection
+    await db.collection(collections.PUBLISHED_TEAM).insertOne({
+      teams: sortedTeams,
+      publishedAt: new Date()
+    });
+    
+    return { success: true, teamsCount: sortedTeams.length };
   }
 };

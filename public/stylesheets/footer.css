@@ -5,7 +5,7 @@
 footer {
   background: linear-gradient(135deg, #0d1b2a, #111827);
   color: #f8f9fa;
-  padding: 50px 20px;
+  padding: 30px 20px;
   text-align: center;
   font-family: 'Poppins', sans-serif;
   position: relative;
@@ -66,8 +66,67 @@ footer {
   100% { opacity: 1; transform: translateY(0);}
 }
 
-/* Responsive */
+/* Responsive - Tablet */
+@media (max-width: 992px) {
+  footer {
+    padding: 25px 15px;
+  }
+}
+
+/* Responsive - Mobile */
 @media (max-width: 768px) {
-  footer p { font-size: 0.95rem; }
-  footer .social-icons a { font-size: 1.5rem; margin: 0 8px; }
+  footer {
+    padding: 20px 12px;
+  }
+  
+  footer p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  
+  footer p span {
+    font-size: inherit;
+  }
+  
+  footer .social-icons {
+    margin-top: 15px;
+  }
+  
+  footer .social-icons a {
+    font-size: 1.3rem;
+    margin: 0 10px;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 576px) {
+  footer {
+    padding: 15px 10px;
+  }
+  
+  footer p {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  
+  footer .social-icons {
+    margin-top: 12px;
+  }
+  
+  footer .social-icons a {
+    font-size: 1.2rem;
+    margin: 0 8px;
+  }
+  
+  /* Reduce wave animation on small screens */
+  @keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  
+  footer p span:hover {
+    transform: scale(1.3) rotate(-3deg);
+  }
 }
