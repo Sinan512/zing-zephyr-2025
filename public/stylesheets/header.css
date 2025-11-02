@@ -4,14 +4,16 @@
 
 .hero-section {
   position: relative;
-  min-height: 80vh;
+  height: 100vh; /* FULL SCREEN */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #ad6ec2, #1f3646); /* soft artistic gradient */
-  padding: 60px 20px;
+  background: linear-gradient(135deg, #ad6ec2, #1f3646);
+  padding: 0 20px; /* remove top/bottom padding */
 }
+
 
 /* --- Background artistic icons floating --- */
 .hero-section::before,

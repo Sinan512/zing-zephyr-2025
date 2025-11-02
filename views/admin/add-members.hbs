@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="/stylesheets/add-members.css" />
+<section>
+<div class="animated-bg"></div>
+
+<div class="container py-5 add-members-page">
+
+  <div class="glass-card p-4 shadow-lg">
+
+    <!-- Team Title -->
+    <h2 class="text-center mb-4 team-title">{{teamName}}</h2>
+
+    <!-- Add Member Form -->
+    <form action="/admin/add-members/{{teamName}}" method="POST" class="row g-3 mb-5 member-form">
+
+      <div class="col-md-6">
+        <input type="text" name="memberName" class="form-control" placeholder="Enter Member Name" required>
+      </div>
+
+      <div class="col-md-4">
+        <select name="zone" class="form-select" required>
+          <option disabled selected>Select Zone</option>
+          <option>Pre Zone</option>
+          <option>Mid Zone</option>
+          <option>High Zone</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Add</button>
+      </div>
+    </form>
+
+    <!-- Members List -->
+    <h4 class="mb-3">Current Members</h4>
+
+    <div class="table-responsive mb-3">
+      <table class="table table-hover align-middle text-center members-table">
+        <thead class="table-dark">
+          <tr>
+            <th>Name</th>
+            <th>Zone</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each displayMembers}}
+          <tr>
+            <td class="uppercase">{{this.member}}</td>
+            <td>{{this.zone}}</td>
+
+            <td>
+              <a href="/admin/remove-member/{{this.member}}?team={{../teamName}}" class="btn btn-danger btn-sm"
+                onclick="return confirm('Are you sure to remove this member?');">
+                Remove
+              </a>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+</section>

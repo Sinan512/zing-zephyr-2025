@@ -1,10 +1,6 @@
 const { MongoClient } = require("mongodb");
-require('dotenv').config();
 
-// Use Atlas if provided, otherwise fallback to local MongoDB
-const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
-// Use Atlas if provided, otherwise fallback to local MongoDB
-
+const uri = "mongodb://127.0.0.1:27017" ;
 const client = new MongoClient(uri);
 
 async function connectDB() {

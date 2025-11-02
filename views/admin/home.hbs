@@ -1,67 +1,40 @@
-    <link rel="stylesheet" href="/stylesheets/admin-home.css">
+<link rel="stylesheet" href="/stylesheets/admin-home.css">
 
-<section id="admin-panel" class="py-5 position-relative overflow-hidden">
-  <!-- Parallax Background -->
-  <div class="parallax-bg position-absolute top-0 start-0 w-100 h-100"></div>
+<section id="admin-panel" class="admin-section">
+  <div class="container text-center">
 
-  <div class="container position-relative text-center text-dark">
-    <!-- Section Title -->
-    <div class="mb-5">
-      <h2 class="fw-bold display-6 animate__animated animate__fadeInDown">Admin Control Panel</h2>
-      <p class="text-muted animate__animated animate__fadeInUp">
-        Manage all data related to Zing Zephyr 2025 — teams, programs, and points.
-      </p>
+    <!-- Heading -->
+    <div class="fade-in-up">
+      <h2 class="panel-title">Admin Control Panel</h2>
+      <p class="panel-subtitle">Manage everything for {{fName}} effortlessly.</p>
     </div>
 
-    <!-- Action Buttons Grid -->
-    <div class="row g-4 justify-content-center">
-      <div class="col-10 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 admin-card animate__animated animate__fadeInUp">
-          <h5 class="fw-bold mb-3">Manage Progame</h5>
-          <button class="btn btn-outline-primary w-100 mb-2">Edit Teams</button>
-          <button class="btn btn-outline-secondary w-100 mb-2">Add Programs</button>
-          <button class="btn btn-outline-success w-100 mb-2">Judgment&Call list</button>
-        </div>
-      </div>
-
-      <div class="col-10 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 admin-card animate__animated animate__fadeInUp">
-          <h5 class="fw-bold mb-3">View Status</h5>
-          <button class="btn btn-outline-primary w-100 mb-2">Show Team Status</button>
-          <button class="btn btn-outline-success w-100 mb-2">Show Student Points</button>
-          <button class="btn btn-outline-danger w-100">Show Results</button>
-        </div>
-      </div>
+    <!-- Action Buttons -->
+    <div class="action-buttons fade-in-up">
+      <a href="/admin/edit-result" class="admin-btn settings">Add Point</a>
+      <a href="/admin/call-list" class="admin-btn call">Call List</a>
+      <a href="/admin/publish" class="admin-btn publish">Publish</a>
     </div>
 
-    <!-- Four Teams Edit Section -->
-    <div class="row mt-5 g-4 justify-content-center">
-
-      <div class="col-6 col-md-3">
-        <div class="card text-white text-center rounded-4 py-4 admin-team gharnata animate__animated animate__fadeInUp">
-          <h5>GHARNATA</h5>
-          <p class="small">Edit Members</p>
-        </div>
+    <!-- Team Highlight Section -->
+    <div class="team-grid">
+        {{#each teams}}
+      <div class="team-card fade-in-up">
+        <h3>{{this.teamName}}</h3>
+        <a class="btn" href="/admin/add-members/{{this.teamName}}">Add/Edit Members</a>
       </div>
-      
-      <div class="col-6 col-md-3">
-        <div class="card text-white text-center rounded-4 py-4 admin-team saraqusta animate__animated animate__fadeInUp">
-          <h5>SARAQUSTA</h5>
-          <p class="small">Edit Members</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card text-white text-center rounded-4 py-4 admin-team thulythula animate__animated animate__fadeInUp">
-          <h5>THULYTHULA</h5>
-          <p class="small">Edit Members</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card text-white text-center rounded-4 py-4 admin-team ishbiliyya animate__animated animate__fadeInUp">
-          <h5>ISHBILIYYA</h5>
-          <p class="small">Edit Members</p>
-        </div>
-      </div>
+        {{/each}}
     </div>
   </div>
 </section>
+
+<script>
+  // Fade in when in view
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  });
+
+  document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+</script>

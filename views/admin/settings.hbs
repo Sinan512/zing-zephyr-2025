@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="/stylesheets/admin-settings.css" />
+
+<section class="fest-section container py-5">
+
+  <!-- FEST TITLE SECTION -->
+  <div class="text-center mb-4 fade-in-up">
+    <h1
+      class="fest-title text-decoration-none"
+      id="festTitle"
+      contenteditable="true"
+    >{{fName}}</h1>
+    <p class="fest-subtitle">Click the title to edit the Fest name</p>
+  </div>
+
+  <div class="row justify-content-center g-4">
+
+    <!-- TEAMS SECTION (TOP) -->
+    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
+      <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title">Teams</h3>
+        </div>
+
+        <!-- Add Team Input -->
+        <form
+          action="/admin/add-team"
+          method="POST"
+          class="d-flex mb-3 add-team-box"
+        >
+          <input
+            type="text"
+            name="teamName"
+            class="form-control"
+            placeholder="Enter new team name..."
+            required
+          />
+          <button type="submit" class="btn add-team-btn">Add</button>
+        </form>
+
+        <div class="list-group">
+          {{#each teams}}
+            <div class="list-item fade-item">{{this.teamName}}</div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMS SECTION (BELOW) -->
+
+    <!-- Add Program Form -->
+    <form
+      action="/admin/add-program"
+      method="POST"
+      class="col-12 col-md-10 col-lg-8 fade-in-up add-program-card"
+    >
+
+      <h3 class="form-title">Add New Program</h3>
+
+      <div class="input-group">
+        <label>Program Name</label>
+        <input
+          type="text"
+          name="programName"
+          placeholder="Enter program name..."
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>Zone</label>
+        <select name="zone" required>
+          <option value="" disabled selected>Select Zone</option>
+          <option value="Pre Zone">Pre Zone</option>
+          <option value="Mid Zone">Mid Zone</option>
+          <option value="High Zone">High Zone</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Maximum Mark</label>
+        <select name="maxMark" required>
+          <option value="" disabled selected>Select Maximum Mark</option>
+          <option value="11">11</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Stage / Non-Stage</label>
+        <select name="stageType" required>
+          <option value="" disabled selected>Select Type</option>
+          <option value="Stage">Stage</option>
+          <option value="Non Stage">Non Stage</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Program Type</label>
+        <select name="programType" required>
+          <option value="" disabled selected>Select Program Type</option>
+          <option value="Individual">Individual</option>
+          <option value="Group">Group</option>
+        </select>
+      </div>
+
+      <button type="submit" class="add-btn" onclick="return confirm('Are You Ready To Continue ?')">Add Program</button>
+    </form>
+    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
+      <div class="section-card">
+        {{#if programs}}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title">Programs</h3>
+        </div>
+        {{/if}}
+        <div class="list-group">
+          {{#each programs}}
+            <div class="list-item fade-item">{{this.programName}}</div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+  // Enter key update fest name const festTitle =
+  document.getElementById("festTitle"); festTitle.addEventListener("keydown",
+  (e) => { if (e.key === "Enter") { e.preventDefault(); const newTitle =
+  festTitle.innerText.trim(); fetch("/admin/update-fest-name", { method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" }, body:
+  `festName=${encodeURIComponent(newTitle)}` }).catch(err =>
+  console.error("Error sending data:", err)); } }); // Fade-in animation const
+  observer = new IntersectionObserver(entries => { entries.forEach(entry => { if
+  (entry.isIntersecting) entry.target.classList.add("in-view"); }); });
+  document.querySelectorAll(".fade-in-up, .fade-item").forEach(el =>
+  observer.observe(el));
+</script>

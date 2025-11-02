@@ -1,0 +1,51 @@
+/* Animated Gradient Background */
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(-45deg, #440ad7, #635dff, #d76bff, #ff6584);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
+  z-index: -1;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Title */
+.team-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Uppercase Name Display */
+.uppercase {
+  text-transform: uppercase;
+}
+
+/* Animations for Content */
+.add-members-page {
+  animation: fadeUp 0.8s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form input look */
+.member-form .form-control,
+.member-form .form-select {
+  border-radius: 12px;
+}

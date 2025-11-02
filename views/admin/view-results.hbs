@@ -1,0 +1,123 @@
+<link rel="stylesheet" href="/stylesheets/view-results.css">
+
+<div class="container-fluid py-4 results-container">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-md-11 col-12">
+      <h2 class="text-center mb-4">Program Results</h2>
+
+      <div class="table-responsive">
+        <table id="resultsTable" class="display table table-striped table-hover align-middle text-center" style="width: 100%">
+          <thead>
+            <tr>
+              <th>Program</th>
+              <th>Zone</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each programs}}
+            <tr>
+              <td>{{this.programName}}</td>
+              <td>{{this.zone}}</td>
+              <td>
+                <button class="view-btn" onclick="openDetails('{{@index}}')">View Details</button>
+              </td>
+            </tr>
+
+            <!-- Hidden details for popup -->
+            <tr class="details-row" style="display:none;">
+              <td colspan="3">
+                <div id="details-{{@index}}" class="details-content">
+                  <table class="details-table">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Participant</th>
+                        <th>Team</th>
+                        <th>Grade</th>
+                        <th>Mark</th>
+                        <th>Point</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each this.results}}
+                      <tr>
+                        <td>{{this.codes}}</td>
+                        <td>{{this.participant}}</td>
+                        <td>{{this.team}}</td>
+                        <td>{{this.grade}}</td>
+                        <td>{{this.mark}}</td>
+                        <td>{{this.point}}</td>
+                      </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Glass Search Bar -->
+      <div class="custom-search-bar mt-3 text-center">
+        <input type="text" id="customSearchInput" placeholder="🔍 Search Program..." />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Modal -->
+<div id="detailsModal" class="details-modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Hide details rows so DataTables ignores them
+    $('#resultsTable tbody tr.details-row').hide();
+
+    const table = $('#resultsTable').DataTable({
+      searching: true,
+      pageLength: 7,
+      lengthMenu: [5, 7, 10, 15],
+      responsive: true,
+      language: {
+        lengthMenu: "Show _MENU_ entries",
+        paginate: {
+          next: "Next ➜",
+          previous: "⬅ Prev"
+        }
+      }
+    });
+
+    // Custom search
+    $('#customSearchInput').on('keyup', function () {
+      table.search(this.value).draw();
+    });
+  });
+
+  // Open Modal with details
+  function openDetails(index) {
+    const content = document.getElementById("details-" + index);
+    const modalBody = document.getElementById("modalBody");
+    modalBody.innerHTML = content.innerHTML; // Copy inner content
+
+    $("#detailsModal").fadeIn(250);
+  }
+
+  function closeModal() {
+    $("#detailsModal").fadeOut(200);
+  }
+
+  // Close when clicking outside
+  window.onclick = function (event) {
+    if (event.target == document.getElementById("detailsModal")) {
+      closeModal();
+    }
+  };
+</script>

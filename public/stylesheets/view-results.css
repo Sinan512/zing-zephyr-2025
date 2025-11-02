@@ -1,0 +1,297 @@
+/* Page-specific styles only for view-results.hbs */
+.results-container {
+  background: linear-gradient(120deg, #940dae, #1e1a54);
+   color: #fdfbfb;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* Header Title */
+.results-container h2 {
+  color: #efedf1;
+  text-shadow: 0 0 10px #b57fff;
+  font-weight: 600;
+  animation: fadeInDown 0.8s ease;
+}
+
+/* Main table styling */
+table.dataTable {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  font-size: 1rem;
+}
+
+/* Table header size & look */
+table.dataTable thead th {
+  background: rgba(0, 0, 0, 0.4);
+  color: #f8f4f4;/*black */
+  font-size: 1.05rem;
+  padding: 14px 10px;
+  letter-spacing: 0.5px;
+}
+
+/* Hover effect */
+table.dataTable tbody tr:hover {
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+/* Prevent details row from altering main DataTable styling */
+tr[data-details="true"] {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+/* Details box styling */
+.details-box {
+  background: rgba(149, 58, 185, 0.12);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 10px 0 25px 0;
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #000000;
+  margin-top: 10px;
+}
+
+.details-table th,
+.details-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  text-align: center;
+}
+
+/* View button styling */
+.view-btn {
+  background: linear-gradient(45deg, #9e57e8, #4b1b8b);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #fbfcfa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  background: linear-gradient(45deg, #b168ff, #6322cc);
+  transform: scale(1.05);
+}
+
+/* DataTables customization (search, pagination, dropdown) */
+.dataTables_wrapper .dataTables_filter input {
+  background: rgba(255, 255, 255, 0.2);
+  color: #f8f8f9;/*dark blue */
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: all 0.3s;
+  margin-left: 8px;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+  background: rgba(255, 255, 255, 0.4);
+  outline: none;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  background: rgba(255, 255, 255, 0.2);
+  color: #faf8f8;/*dark red */
+  border-radius: 5px;
+  border: none;
+}
+
+/* Pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #f7faf7 !important; /*dark green */
+  border-radius: 6px;
+  margin: 2px;
+  padding: 4px 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: #fdfcfc !important;/*orange */
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .results-container {
+    padding: 25px 10px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  table.dataTable {
+    font-size: 0.85rem;
+  }
+
+  .details-box {
+    padding: 10px;
+  }
+
+  .view-btn {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom glass search bar below table */
+.custom-search-bar {
+  margin-top: 20px;
+}
+
+.custom-search-bar input {
+  width: 60%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  color: #fdfbfb;
+  padding: 10px 15px;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.custom-search-bar input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  outline: none;
+  transform: scale(1.02);
+  box-shadow: 0 0 12px rgba(149, 58, 185, 0.6);
+}
+
+@media (max-width: 768px) {
+  .custom-search-bar input {
+    width: 85%;
+    font-size: 0.9rem;
+  }
+}
+
+.details-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 700px;
+  margin: 8% auto;
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.2);
+  animation: zoomIn 0.3s ease;
+}
+
+.close-btn {
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ======== Popup Modal Styling ======== */
+.details-modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 26, 84, 0.65);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  width: 90%;
+  max-width: 800px;
+  margin: 7% auto;
+  padding: 25px 30px;
+  color: #fdfbfb;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
+  position: relative;
+  animation: fadeUp 0.35s ease;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  right: 18px;
+  top: 10px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  color: #d0a8ff;
+  transform: scale(1.2);
+}
+
+/* Table inside Modal */
+.modal-content .details-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #000;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.modal-content .details-table th,
+.modal-content .details-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px;
+  text-align: center;
+  color: #fff;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
