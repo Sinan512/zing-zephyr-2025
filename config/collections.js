@@ -7,5 +7,6 @@ module.exports={
     TEAM_POINTS:"teamPoints",
     PENDING_RESULTS:"pendingResults",
     PUBLISHED:"published",
-    PUBLISHED_TEAM:"publishedTeam"
+    PUBLISHED_TEAM:"publishedTeam",
+    INDIVIDUAL_POINTS:"individualPoints"
 };

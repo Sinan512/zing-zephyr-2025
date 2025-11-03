@@ -125,72 +125,166 @@ for (const [team, totalMark] of Object.entries(teamTotals)) {
   }
 }
 
-// 9️⃣ Update each member's total points in TEAM_DATA (only for Individual programs)
+// 9️⃣ Update each member's total marks in INDIVIDUAL_POINTS (for Individual programs only)
 for (const r of results) {
-  const { participant, team, mark, programName } = r;
+  const { participant, team, mark } = r;
 
-  // 🔹 Fetch the program document to check its type
+  // 🔹 Fetch the program document to check its type & zone
   const programDoc = await db.collection(collections.PROGRAMS).findOne({ programName });
   if (!programDoc) {
     console.warn(`⚠️ Program "${programName}" not found, skipping member update.`);
     continue;
   }
 
-  // 🔹 Skip if the program type is Group
+  // 🔹 Skip Group programs
   if (programDoc.programType === "Group") {
     console.log(`⏩ Skipped member update for Group program "${programName}".`);
     continue;
   }
 
-  // 🔹 Continue only for Individual programs
-  const programZone = programDoc.zone;
-  const teamDoc = await db.collection(collections.TEAM_DATA).findOne({ teamName: team });
-  if (!teamDoc) continue;
+  // Determine the target zone(s)
+  let targetZones = [];
 
-  let memberFound = false;
-
-  // --- For Individual programs with specific zones (Pre Zone, Mid Zone, High Zone) ---
-  // Match by: name, team, AND zone
-  if (programZone !== "General") {
-    const filter = { teamName: team };
-    filter[`${programZone}.member`] = participant;
-
-    const update = { $inc: { [`${programZone}.$.point`]: mark } };
-
-    const result = await db.collection(collections.TEAM_DATA).updateOne(filter, update);
-
-    if (result.modifiedCount > 0) {
-      console.log(`✅ Added ${mark} to ${participant} in ${programZone} (Individual)`);
-      memberFound = true;
-    }
-  }
-  // --- For General zone programs (any zone can participate) ---
-  // Match by: name and team only (no zone check)
-  else {
-    for (const z of ["Pre Zone", "Mid Zone", "High Zone"]) {
-      const filter = { teamName: team };
-      filter[`${z}.member`] = participant;
-
-      const update = { $inc: { [`${z}.$.point`]: mark } };
-
-      const result = await db.collection(collections.TEAM_DATA).updateOne(filter, update);
-
-      if (result.modifiedCount > 0) {
-        console.log(`✅ Added ${mark} to ${participant} in ${z} (General program)`);
-        memberFound = true;
-        break; // Only add to first matching zone found
+  if (programDoc.zone !== "General") {
+    // For Pre/Mid/High Zone programs, direct update
+    targetZones = [programDoc.zone];
+  } else {
+    // For General programs — find actual zone of this member
+    const teamDoc = await db.collection(collections.TEAM_DATA).findOne({ teamName: team });
+    if (teamDoc) {
+      for (const z of ["Pre Zone", "Mid Zone", "High Zone"]) {
+        if (Array.isArray(teamDoc[z])) {
+          const exists = teamDoc[z].some(m => m.member === participant);
+          if (exists) {
+            targetZones.push(z);
+            break; // member exists in only one zone
+          }
+        }
       }
     }
   }
 
-  if (!memberFound) {
-    console.warn(`⚠️ Member ${participant} not found in team ${team}`);
+  if (targetZones.length === 0) {
+    console.warn(`⚠️ Zone not found for ${participant} (${team})`);
+    continue;
+  }
+
+  // 🔹 Ensure INDIVIDUAL_POINTS doc exists
+  const individualDoc = await db.collection(collections.INDIVIDUAL_POINTS).findOne({});
+  if (!individualDoc) {
+    await db.collection(collections.INDIVIDUAL_POINTS).insertOne({
+      "Pre Zone": [],
+      "Mid Zone": [],
+      "High Zone": []
+    });
+  }
+
+  // 🔹 Update each target zone in INDIVIDUAL_POINTS
+  for (const zone of targetZones) {
+    // Try to update existing member’s mark
+    const updateResult = await db.collection(collections.INDIVIDUAL_POINTS).updateOne(
+      { [`${zone}.member`]: participant },
+      { $inc: { [`${zone}.$.totalMark`]: mark } }
+    );
+
+    // If member not found, push new entry
+    if (updateResult.matchedCount === 0) {
+      await db.collection(collections.INDIVIDUAL_POINTS).updateOne(
+        {},
+        { $push: { [zone]: { member: participant, team: team, totalMark: mark } } }
+      );
+    }
+
+    console.log(`✅ Added ${mark} marks to ${participant} (${team}, ${zone}) in INDIVIDUAL_POINTS`);
   }
 }
+//ended
 
   await db.collection(collections.CALL_LISTS).deleteOne({ program: programName+" - "+zone });
 
     console.log("✅ addResult() completed successfully!");
+  },
+  // Initialize individual points from existing results (one-time migration)
+  initializeIndividualPoints:async()=>{
+    var db=await connectDB();
+    
+    // Get all results from RESULTS collection
+    const allResults = await db.collection(collections.RESULTS).find().toArray();
+    
+    // Clear existing individual points (optional - comment out if you want to preserve)
+    // await db.collection(collections.INDIVIDUAL_POINTS).deleteMany({});
+    
+    let processedCount = 0;
+    
+    for (const resultDoc of allResults) {
+      const { programName, zone, results } = resultDoc;
+      
+      if (!results || !Array.isArray(results)) continue;
+      
+      // Get program type
+      const programDoc = await db.collection(collections.PROGRAMS).findOne({ programName });
+      if (!programDoc || programDoc.programType !== "Individual") continue;
+      
+      const programZone = programDoc.zone;
+      
+      // Process each participant result
+      for (const r of results) {
+        const { participant, team, mark } = r;
+        
+        if (programZone !== "General") {
+          await db.collection(collections.INDIVIDUAL_POINTS).updateOne(
+            {
+              participant: participant,
+              team: team,
+              zone: programZone
+            },
+            {
+              $inc: { totalMark: mark || 0 },
+              $setOnInsert: {
+                participant: participant,
+                team: team,
+                zone: programZone,
+                totalMark: mark || 0
+              }
+            },
+            { upsert: true }
+          );
+        } else {
+          // For General programs, try to find member in teamData
+          const teamDoc = await db.collection(collections.TEAM_DATA).findOne({ teamName: team });
+          if (teamDoc) {
+            for (const z of ["Pre Zone", "Mid Zone", "High Zone"]) {
+              if (Array.isArray(teamDoc[z])) {
+                const memberExists = teamDoc[z].some(m => m.member === participant);
+                if (memberExists) {
+                  await db.collection(collections.INDIVIDUAL_POINTS).updateOne(
+                    {
+                      participant: participant,
+                      team: team,
+                      zone: z
+                    },
+                    {
+                      $inc: { totalMark: mark || 0 },
+                      $setOnInsert: {
+                        participant: participant,
+                        team: team,
+                        zone: z,
+                        totalMark: mark || 0
+                      }
+                    },
+                    { upsert: true }
+                  );
+                  break;
+                }
+              }
+            }
+          }
+        }
+        processedCount++;
+      }
+    }
+    
+    return { message: "Individual points initialized", count: processedCount };
   },
   viewAllResult:async()=>{
     var db=await connectDB();

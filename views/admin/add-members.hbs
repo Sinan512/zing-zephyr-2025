@@ -1,65 +1,216 @@
-<link rel="stylesheet" href="/stylesheets/add-members.css" />
-<section>
-<div class="animated-bg"></div>
+<link rel="stylesheet" href="/stylesheets/add-members.css">
 
-<div class="container py-5 add-members-page">
+<div class="add-members-container">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10">
+        <!-- Page Title -->
+        <h2 class="page-title text-center mb-4">
+          <i class="bi bi-people-fill"></i> {{teamName}} - Members
+        </h2>
 
-  <div class="glass-card p-4 shadow-lg">
+        <!-- Add Member Form -->
+        <div class="glass-card form-section mb-4">
+          <h4 class="section-title mb-3">
+            <i class="bi bi-person-plus-fill"></i> Add New Member
+          </h4>
+          <form action="/admin/add-members/{{teamName}}" method="POST" class="row g-3 member-form">
+            <div class="col-md-6">
+              <label class="form-label">Member Name</label>
+              <input 
+                type="text" 
+                name="memberName" 
+                class="form-control modern-input" 
+                placeholder="Enter Member Name" 
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Zone</label>
+              <select name="zone" class="form-select modern-select" required>
+                <option disabled selected value="">Select Zone</option>
+                <option value="Pre Zone">Pre Zone</option>
+                <option value="Mid Zone">Mid Zone</option>
+                <option value="High Zone">High Zone</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" class="btn-add-member w-100">
+                <i class="bi bi-plus-circle"></i> Add
+              </button>
+            </div>
+          </form>
+        </div>
 
-    <!-- Team Title -->
-    <h2 class="text-center mb-4 team-title">{{teamName}}</h2>
+        <!-- Search Bar -->
+        <div class="search-section mb-4">
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+              type="text" 
+              id="memberSearchInput" 
+              class="member-search-input" 
+              placeholder="🔍 Search members by name or zone..." 
+              autocomplete="off"
+            />
+            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" onclick="clearMemberSearch()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="search-info" id="searchInfo">
+            <span id="memberCount">{{displayMembers.length}}</span> member(s) found
+          </div>
+        </div>
 
-    <!-- Add Member Form -->
-    <form action="/admin/add-members/{{teamName}}" method="POST" class="row g-3 mb-5 member-form">
-
-      <div class="col-md-6">
-        <input type="text" name="memberName" class="form-control" placeholder="Enter Member Name" required>
+        <!-- Members List Table -->
+        <div class="glass-card members-section">
+          <h4 class="section-title mb-3">
+            <i class="bi bi-list-ul"></i> Current Members
+          </h4>
+          <div class="table-responsive">
+            <table id="membersTable" class="table table-hover align-middle text-center members-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Member Name</th>
+                  <th>Zone</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each displayMembers}}
+                <tr class="member-row" data-member="{{this.member}}" data-zone="{{this.zone}}">
+                  <td class="rank-cell">{{inc @index}}</td>
+                  <td class="member-name-cell">{{this.member}}</td>
+                  <td>
+                    <span class="zone-badge">{{this.zone}}</span>
+                  </td>
+                  <td>
+                    <button 
+                      class="btn-remove-member" 
+                      onclick="removeMember('{{this.member}}', '{{../teamName}}', '{{this.zone}}')"
+                      title="Remove Member"
+                    >
+                      <i class="bi bi-trash-fill"></i> 
+                    </button>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+          {{#unless displayMembers}}
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No members added yet</p>
+          </div>
+          {{/unless}}
+        </div>
       </div>
-
-      <div class="col-md-4">
-        <select name="zone" class="form-select" required>
-          <option disabled selected>Select Zone</option>
-          <option>Pre Zone</option>
-          <option>Mid Zone</option>
-          <option>High Zone</option>
-        </select>
-      </div>
-
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary w-100">Add</button>
-      </div>
-    </form>
-
-    <!-- Members List -->
-    <h4 class="mb-3">Current Members</h4>
-
-    <div class="table-responsive mb-3">
-      <table class="table table-hover align-middle text-center members-table">
-        <thead class="table-dark">
-          <tr>
-            <th>Name</th>
-            <th>Zone</th>
-            <th>Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each displayMembers}}
-          <tr>
-            <td class="uppercase">{{this.member}}</td>
-            <td>{{this.zone}}</td>
-
-            <td>
-              <a href="/admin/remove-member/{{this.member}}?team={{../teamName}}" class="btn btn-danger btn-sm"
-                onclick="return confirm('Are you sure to remove this member?');">
-                Remove
-              </a>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
     </div>
-
   </div>
 </div>
-</section>
+
+<script>
+  // Search functionality
+  let searchTimeout;
+  $('#memberSearchInput').on('keyup input', function () {
+    const searchValue = $(this).val().trim().toLowerCase();
+    
+    // Show/hide clear button
+    if (searchValue.length > 0) {
+      $('#clearSearchBtn').fadeIn(200);
+    } else {
+      $('#clearSearchBtn').fadeOut(200);
+    }
+
+    // Debounce search
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      let visibleCount = 0;
+      $('.member-row').each(function() {
+        const memberName = $(this).find('.member-name-cell').text().toLowerCase();
+        const zone = $(this).data('zone').toLowerCase();
+        const searchLower = searchValue.toLowerCase();
+        
+        if (memberName.includes(searchLower) || zone.includes(searchLower)) {
+          $(this).fadeIn(300);
+          visibleCount++;
+        } else {
+          $(this).fadeOut(300);
+        }
+      });
+      
+      // Update count
+      const totalCount = $('.member-row').length;
+      $('#memberCount').text(visibleCount);
+      if (searchValue.length > 0) {
+        $('#searchInfo').html(`<span id="memberCount">${visibleCount}</span> of <span>${totalCount}</span> member(s) found`);
+      } else {
+        $('#memberCount').text(totalCount);
+        $('#searchInfo').html(`<span id="memberCount">${totalCount}</span> member(s) found`);
+      }
+    }, 300);
+  });
+
+  function clearMemberSearch() {
+    $('#memberSearchInput').val('');
+    $('#clearSearchBtn').fadeOut(200);
+    $('.member-row').fadeIn(300);
+    const totalCount = $('.member-row').length;
+    $('#memberCount').text(totalCount);
+    $('#searchInfo').html(`<span id="memberCount">${totalCount}</span> member(s) found`);
+  }
+
+  // Remove member function
+  function removeMember(memberName, teamName, zone) {
+    Swal.fire({
+      title: 'Remove Member?',
+      html: `Are you sure you want to remove <strong>${memberName}</strong> from <strong>${teamName}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, Remove!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/admin/remove-member',
+          method: 'POST',
+          data: { 
+            memberName: memberName,
+            teamName: teamName,
+            zone: zone
+          },
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Removed!',
+                text: response.message,
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => {
+                location.reload();
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to remove member'
+            });
+          }
+        });
+      }
+    });
+  }
+</script>

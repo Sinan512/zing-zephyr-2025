@@ -18,6 +18,16 @@ const requireAuth = async (req, res, next) => {
 
 // Initialize admin credentials on first load
 authHelper.initializeAdmin();
+// Initialize separate add-point credentials
+authHelper.initializeAddPoint();
+
+// Middleware for add-point separate auth
+const requireAddPointAuth = async (req, res, next) => {
+  if (!authHelper.isAddPointSessionValid(req)) {
+    return res.redirect(`/admin/add-point-login?redirect=${encodeURIComponent(req.originalUrl)}`);
+  }
+  next();
+};
 
 /* GET home page. */
 router.get("/", (req, res) => {
@@ -83,16 +93,55 @@ router.post("/reset-credentials", requireAuth, async (req, res) => {
   }
 });
 
+// Reset Add-Point credentials (separate)
+router.post("/reset-addpoint-credentials", requireAuth, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    await authHelper.updateAddPoint(username, password);
+    res.redirect("/admin/settings?success=Add-Point credentials updated successfully");
+  } catch (error) {
+    res.redirect("/admin/settings?error=Failed to update Add-Point credentials");
+  }
+});
+
 router.post("/add-team", requireAuth, async (req, res) => {
   var teamName = { ...req.body };
   if (req.body) await programHelper.addTeams(teamName);
   res.redirect("back");
 });
 
+// Remove team
+router.post("/remove-team", requireAuth, async (req, res) => {
+  try {
+    const { teamName } = req.body;
+    const ok = await programHelper.removeTeam(teamName);
+    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('application/json') > -1)) {
+      return res.json({ success: ok });
+    }
+    res.redirect("/admin/settings");
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
 router.post("/add-program", requireAuth, async (req, res) => {
   var program = { ...req.body };
   if (program) await programHelper.addPrograms(program);
   res.redirect("/admin/settings");
+});
+
+// Remove program
+router.post("/remove-program", requireAuth, async (req, res) => {
+  try {
+    const { programName } = req.body;
+    const ok = await programHelper.removeProgram(programName);
+    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('application/json') > -1)) {
+      return res.json({ success: ok });
+    }
+    res.redirect("/admin/settings");
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
 });
 
 router.get("/add-members/:TName", requireAuth, async (req, res) => {
@@ -127,6 +176,21 @@ router.post("/add-members/:TName", requireAuth, async (req, res) => {
   await programHelper.addMember(teamName, memberDetails);
 
   res.redirect(`/admin/add-members/${teamName}`);
+});
+
+router.post("/remove-member", requireAuth, async (req, res) => {
+  try {
+    const { memberName, teamName, zone } = req.body;
+    const success = await programHelper.removeMember(teamName, memberName, zone);
+    
+    if (success) {
+      res.json({ success: true, message: `Member "${memberName}" removed successfully from ${teamName}` });
+    } else {
+      res.json({ success: false, message: "Failed to remove member. Member may not exist." });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 });
 
 router.get("/call-list", requireAuth, async (req, res) => {
@@ -243,7 +307,26 @@ router.get("/edit-result", requireAuth, async(req,res)=>{
   
 res.render("admin/select-program",{admin:true,fName, programs})
 });
-router.get("/add-point/", requireAuth, async(req,res)=>{
+
+// Add-Point separate login routes
+router.get("/add-point-login", async (req, res) => {
+  const redirect = req.query.redirect || "";
+  res.render("admin/login", { cover: true, addPoint: true, redirect });
+});
+
+router.post("/add-point-login", async (req, res) => {
+  const { username, password, redirect: redirectBody } = req.body;
+  const isValid = await authHelper.verifyAddPoint(username, password);
+  if (isValid) {
+    req.session.addPointLoggedIn = true;
+    req.session.addPointLastActivity = Date.now();
+    const redirect = redirectBody || req.query.redirect || "/admin/edit-result";
+    return res.redirect(redirect);
+  }
+  res.render("admin/login", { cover: true, addPoint: true, error: "Invalid username or password", redirect: redirectBody || req.query.redirect || "" });
+});
+
+router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
   let {programName, zone}=req.query;
@@ -253,15 +336,19 @@ router.get("/add-point/", requireAuth, async(req,res)=>{
   res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
 });
 
-router.post("/save-points", requireAuth, async(req,res)=>{
+router.post("/save-points", requireAddPointAuth, async(req,res)=>{
   await resultHelper.addPoint(req.body);
   
-    res.redirect('/admin/edit-result');
+    res.redirect('/user/enter');
 });
 
 router.get("/view-result", requireAuth, async (req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
+
+  // Initialize individual points from existing results (one-time, can be called again to update)
+  // Uncomment the next line if you want to initialize/update from existing results
+  // await resultHelper.initializeIndividualPoints();
 
   // Check if search query is provided
   const searchQuery = req.query.search;
@@ -273,7 +360,7 @@ router.get("/view-result", requireAuth, async (req,res)=>{
     programs = await resultHelper.viewAllResult();
   }
 
-  // Get member points grouped by zone
+  // Get member points grouped by zone (from INDIVIDUAL_POINTS collection)
   const memberPointsByZone = await programHelper.getAllMemberPointsByZone();
   
   // Get teams sorted by total points
@@ -285,6 +372,15 @@ router.get("/view-result", requireAuth, async (req,res)=>{
  
   res.render("admin/view-results", { admin:true,programs, fName, memberPointsByZone, teamsByPoints, programCount });
 })
+
+router.post("/initialize-individual-points", requireAuth, async (req, res) => {
+  try {
+    const result = await resultHelper.initializeIndividualPoints();
+    res.json({ success: true, message: result.message, count: result.count });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
 
 // API endpoint for AJAX search (optional, for dynamic search without page reload)
 router.get("/search-results", requireAuth, async (req,res)=>{

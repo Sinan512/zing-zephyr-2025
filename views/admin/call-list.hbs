@@ -1,127 +1,169 @@
 <link rel="stylesheet" href="/stylesheets/call-list.css" />
 
- <div class="container py-5">
-    <div class="row">
-      <div class="card-custom col-lg-10 mx-auto">
-        <h2 class="text-center mb-4 fw-bold">Create Call List</h2>
-        <form action="/admin/add-call-list" method="POST" class="row g-3 align-items-center mx-auto" id="callListForm">
-          <div class="col-md-4">
-            <label class="form-label">Program (Zone Wise)</label>
-            <select name="program" id="programSelect" class="form-select" required>
-              <option value="">Select Program & Zone</option>
-              {{#each programs}}
-              <option value="{{this.programName}} - {{this.zone}}">{{this.programName}} - {{this.zone}}</option>
-              {{/each}}
-            </select>
-          </div>
+<div class="call-list-container">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-11">
+        
+        <!-- Create Call List Form -->
+        <div class="glass-card form-section mb-5">
+          <h2 class="section-title text-center mb-4">
+            <i class="bi bi-list-check"></i> Create Call List
+          </h2>
+          
+          <form action="/admin/add-call-list" method="POST" class="row g-4" id="callListForm">
+            <div class="col-md-4">
+              <label class="form-label">
+                <i class="bi bi-calendar-event"></i> Program (Zone Wise)
+              </label>
+              <select name="program" id="programSelect" class="modern-select form-select" required>
+                <option value="">Select Program & Zone</option>
+                {{#each programs}}
+                <option value="{{this.programName}} - {{this.zone}}">{{this.programName}} - {{this.zone}}</option>
+                {{/each}}
+              </select>
+            </div>
 
-          <div class="col-md-3">
-            <label class="form-label">Team</label>
-            <select name="team" id="teamSelect" class="form-select" required>
-              <option value="">Select Team</option>
-              {{#each teams}}
-              <option value="{{this.teamName}}">{{this.teamName}}</option>
-              {{/each}}
-            </select>
-          </div>
+            <div class="col-md-3">
+              <label class="form-label">
+                <i class="bi bi-people"></i> Team
+              </label>
+              <select name="team" id="teamSelect" class="modern-select form-select" required>
+                <option value="">Select Team</option>
+                {{#each teams}}
+                <option value="{{this.teamName}}">{{this.teamName}}</option>
+                {{/each}}
+              </select>
+            </div>
 
-          <div class="col-md-3">
-            <label class="form-label">Member</label>
-            <select name="member" id="memberSelect" class="form-select" multiple required>
-              <option value="">Select Member</option>
-            </select>
-          </div>
+            <div class="col-md-4">
+              <label class="form-label">
+                <i class="bi bi-person"></i> Member
+              </label>
+              <select name="member" id="memberSelect" class="modern-select form-select" multiple required>
+                <option value="" disabled>Select one or more members (Ctrl+Click)</option>
+              </select>
+            </div>
 
-          <div class="col-12 text-center mt-3">
-            <button class="btn btn-add px-4 py-2 fw-semibold">ADD</button>
+            <div class="col-md-1 d-flex align-items-end">
+              <button type="submit" class="btn-add-call-list w-100">
+                <i class="bi bi-plus-circle"></i> ADD
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 🔍 Program Search Bar -->
+        <div class="search-section mb-4">
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+              type="text" 
+              id="programSearch" 
+              class="program-search-input" 
+              placeholder="🔍 Search Program..." 
+              autocomplete="off"
+            />
           </div>
-        </form>
+        </div>
+
+        <!-- Table Section -->
+        <div class="results-section">
+          {{#each groupedCallList}}
+          <div class="program-block mb-4 glass-card">
+            <h4 class="program-title mb-3">
+              <i class="bi bi-trophy"></i> {{@key}}
+            </h4>
+            <div class="table-responsive">
+              <table id="callListTable-{{@key}}" class="table table-striped table-hover align-middle call-list-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Member</th>
+                    <th>Team</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each this}}
+                  <tr>
+                    <td class="rank-cell">{{inc @index}}</td>
+                    <td class="member-name">{{member}}</td>
+                    <td>
+                      <span class="team-badge">{{team}}</span>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {{/each}}
+          
+          {{#unless groupedCallList}}
+          <div class="empty-state glass-card">
+            <i class="bi bi-inbox"></i>
+            <p>No call lists created yet</p>
+          </div>
+          {{/unless}}
+        </div>
+
       </div>
     </div>
-
-    <!-- 🔍 Program Search Bar -->
-<div class="text-center justifier mt-4">
-  <div class="text-center mb-5 fade-slide col-lg-10">
-    <div class="search-wrap mx-auto w-100 w-md-75">
-      <label for="programSearch" class="visually-hidden">Search Program</label>
-      <input type="text" id="programSearch" class="form-control shadow search-input" placeholder="🔎 Search Program...">
-    </div>
-  </div>
-</div>
-<!-- Table Section -->
-<div class="row mt-5 mb-5">
-  <div class="card-custom col-lg-10 mx-auto">
-    {{#each groupedCallList}}
-    <div class="program-block mb-4">
-      <h4 class="fw-bold text-warning mt-3 program-title">{{@key}}</h4>
-      <table id="callListTable-{{@key}}" class="table table-striped table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Team</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each this}}
-          <tr>
-            <td>{{member}}</td>
-            <td>{{team}}</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-    {{/each}}
   </div>
 </div>
 
-  <script>
-    // Fetch members dynamically when team/program changes
-$('#teamSelect, #programSelect').on('change', function() {
-  const team = $('#teamSelect').val();
-  const program = $('#programSelect').val();
+<script>
+  // Fetch members dynamically when team/program changes
+  $('#teamSelect, #programSelect').on('change', function() {
+    const team = $('#teamSelect').val();
+    const program = $('#programSelect').val();
 
-  if (!team || !program) return;
+    if (!team || !program) {
+      $('#memberSelect').empty();
+      $('#memberSelect').append('<option value="" disabled>Select one or more members (Ctrl+Click)</option>');
+      return;
+    }
 
-  // Extract zone from program (e.g. "Speech - Pre Zone" → "Pre Zone")
-  const zone = program.split(' - ')[1];
+    // Extract zone from program (e.g. "Speech - Pre Zone" → "Pre Zone")
+    const zone = program.split(' - ')[1];
 
-  $.get(`/admin/get-members/${team}/${zone}`, function(data) {
-    const memberSelect = $('#memberSelect');
-    memberSelect.empty();
+    $.get(`/admin/get-members/${team}/${zone}`, function(data) {
+      const memberSelect = $('#memberSelect');
+      memberSelect.empty();
 
-    // Add default info text
-    memberSelect.append('<option disabled>Select one or more members (Ctrl+Click)</option>');
+      // Add default info text
+      memberSelect.append('<option disabled>Select one or more members (Ctrl+Click)</option>');
 
-    // Populate members
-    data.forEach(m => {
-      memberSelect.append(`<option value="${m.member}">${m.member}</option>`);
+      // Populate members
+      data.forEach(m => {
+        memberSelect.append(`<option value="${m.member}">${m.member}</option>`);
+      });
     });
   });
-});
 
-    // Initialize all DataTables after render
-    $(document).ready(function() {
-  // Initialize DataTables for all tables but disable their search boxes
-  $('table[id^="callListTable"]').DataTable({
-    searching: false, // disable per-table search
-    paging: false,
-    info: false,
-    order: [[0, 'asc']]
-  });
+  // Initialize all DataTables after render
+  $(document).ready(function() {
+    // Initialize DataTables for all tables but disable their search boxes
+    $('table[id^="callListTable"]').DataTable({
+      searching: false,
+      paging: false,
+      info: false,
+      order: [[0, 'asc']],
+      responsive: true
+    });
 
-  // Custom global search for program titles
-  $('#programSearch').on('keyup', function() {
-    const searchValue = $(this).val().toLowerCase();
+    // Custom global search for program titles
+    $('#programSearch').on('keyup', function() {
+      const searchValue = $(this).val().toLowerCase();
 
-    $('.program-block').each(function() {
-      const programName = $(this).find('.program-title').text().toLowerCase();
-      if (programName.includes(searchValue)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
+      $('.program-block').each(function() {
+        const programName = $(this).find('.program-title').text().toLowerCase();
+        if (programName.includes(searchValue)) {
+          $(this).fadeIn(300);
+        } else {
+          $(this).fadeOut(300);
+        }
+      });
     });
   });
-});
 </script>

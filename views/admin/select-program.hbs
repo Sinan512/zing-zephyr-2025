@@ -29,7 +29,7 @@
                 <td class="ps-4">{{this.programName}}</td>
                 <td class="ps-4">{{this.zone}}</td>
                 <td class="text-center">
-                  <a href="/admin/add-point?programName={{this.programName}}&zone={{this.zone}}" class="btn btn-add">Add Point</a>
+                  <a href="/admin/add-point?programName={{this.programName}}&zone={{this.zone}}" class="btn btn-add" data-program="{{this.programName}}" data-zone="{{this.zone}}">Add Point</a>
                 </td>
               </tr>
               {{/each}}
@@ -57,6 +57,18 @@
       // Custom search input filters DataTable
       $('#programSearch').on('keyup', function() {
         table.search(this.value).draw();
+      });
+      // Auto-copy Add Point link on click, then navigate
+      $(document).on('click', 'a.btn-add', async function(e) {
+        const href = $(this).attr('href');
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(location.origin + href);
+          }
+        } catch(err) {
+          // ignore clipboard errors
+        }
+        // proceed to page
       });
     });
   </script>

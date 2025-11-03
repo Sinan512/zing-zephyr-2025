@@ -1,75 +1,357 @@
- /* ========== BASE / THEME ========== */
-:root{
-  --bg-1: #481a58;         /* deep navy */
-  --bg-2: #391f60;         /* indigo */
-  --accent-1: #9b5cf6;     /* vivid violet */
-  --accent-2: #5a1f98;     /* coral */
-  --glass: rgba(255,255,255,0.06);
-  --glass-2: rgba(255,255,255,0.03);
-  --muted: rgba(255,255,255,0.7);
-  --card-glow: 0 8px 40px rgba(155,92,246,0.12);
-  --soft-shadow: 0 6px 24px rgba(11,12,22,0.5);
+/* Call List Page - Glassmorphism Design */
+.call-list-container {
+  background: linear-gradient(120deg, #940dae, #1e1a54);
+  color: #fdfbfb;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
 }
- body {
-       background: radial-gradient(1200px 600px at 10% 20%, rgba(155,92,246,0.12), transparent 8%),
-              radial-gradient(900px 500px at 90% 80%, rgba(255,122,162,0.06), transparent 6%),
-              linear-gradient(160deg, var(--bg-1), var(--bg-2));
-      /* background-attachment: fixed; */
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-      /* min-height: 100vh; */
-      /* overflow-x: hidden; */
-    }
 
-    .card-custom {
-      backdrop-filter: blur(15px);
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.4);
-      animation: fadeSlideUp 1s ease;
-    }
+.call-list-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(181, 127, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
 
-    @keyframes fadeSlideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
-    .btn-add {
-      background: linear-gradient(90deg,var(--accent-1), var(--accent-2));
-      color: white;
-      border: none;
-      border-radius: 30px;
-      transition: 0.3s;
-    }
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
 
-    .btn-add:hover {
-       transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 50px rgba(155,92,246,0.18); 
-    }
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(181, 127, 255, 0.8), transparent);
+  animation: shimmer 3s infinite;
+}
 
-    .justifier{
-      justify-items: center;
-    }
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
 
-    
-/* input */
-.search-input {
-  border-radius: 999px;
-  padding: 14px 20px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  color: white;
-  font-weight: 500;
-  box-shadow: none;
+.form-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 0 0 15px rgba(181, 127, 255, 0.6);
+  margin-bottom: 25px;
+}
+
+.section-title i {
+  color: #ffd700;
+  margin-right: 12px;
+}
+
+.form-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  display: block;
+}
+
+.form-label i {
+  color: #b57fff;
+  margin-right: 8px;
+}
+
+.modern-select {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.modern-select:focus {
+  background: rgba(255, 255, 255, 0.25);
   outline: none;
+  border-color: rgba(181, 127, 255, 0.8);
+  box-shadow: 0 0 20px rgba(149, 58, 185, 0.4);
+  transform: translateY(-2px);
+  color: #ffffff;
 }
-.search-input::placeholder { color: rgba(255,255,255,0.5); font-weight: 400; }
-.search-input:focus {
-  border-color: rgba(155,92,246,0.8);
-  box-shadow: 0 6px 32px rgba(155,92,246,0.12);
+
+.modern-select option {
+  background: #1e1a54;
+  color: #ffffff;
+  padding: 10px;
+}
+
+/* Multiple select styling */
+.modern-select[multiple] {
+  min-height: 120px;
+  padding: 10px;
+}
+
+.modern-select[multiple] option {
+  padding: 8px 12px;
+  margin: 2px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modern-select[multiple] option:hover {
+  background: rgba(181, 127, 255, 0.3);
+}
+
+.modern-select[multiple] option:checked {
+  background: rgba(181, 127, 255, 0.6);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-add-call-list {
+  background: linear-gradient(135deg, rgba(181, 127, 255, 0.8), rgba(149, 58, 185, 0.8));
+  border: 2px solid rgba(181, 127, 255, 0.6);
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 12px 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.btn-add-call-list:hover {
+  background: linear-gradient(135deg, rgba(181, 127, 255, 1), rgba(149, 58, 185, 1));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(149, 58, 185, 0.5);
+  border-color: rgba(181, 127, 255, 1);
+}
+
+.btn-add-call-list i {
+  margin-right: 6px;
+}
+
+/* Search Section */
+.search-section {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 30px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 18px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.program-search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  color: #fdfbfb;
+  padding: 14px 50px;
+  font-size: 1.1rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.program-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.program-search-input:focus {
+  background: rgba(255, 255, 255, 0.3);
+  outline: none;
+  border-color: rgba(181, 127, 255, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(149, 58, 185, 0.6);
   transform: translateY(-2px);
 }
 
-    table.dataTable thead {
-      background: rgba(255,255,255,0.15);
-    }
+/* Program Blocks */
+.program-block {
+  margin-bottom: 30px;
+}
+
+.program-title {
+  color: #ffd700;
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.program-title i {
+  color: #ffd700;
+  margin-right: 10px;
+}
+
+.call-list-table {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.call-list-table thead {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.call-list-table thead th {
+  color: #180128;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 16px 12px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.call-list-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.call-list-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.01);
+}
+
+.call-list-table tbody td {
+  color: #2b0848;
+  padding: 14px 12px;
+  font-size: 1rem;
+}
+
+.rank-cell {
+  font-weight: 700;
+  color: #000000 !important;
+  font-size: 1.1rem;
+}
+
+.member-name {
+  font-weight: 600;
+  color: black;
+  text-transform: uppercase;
+}
+
+.team-badge {
+  display: inline-block;
+  background: rgba(147, 67, 207, 0.836);
+  color: #fefefe;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(181, 127, 255, 0.5);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 15px;
+  display: block;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .glass-card {
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .call-list-container {
+    padding: 30px 15px;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+  
+  .form-section .row .col-md-1 {
+    margin-top: 15px;
+  }
+  
+  .btn-add-call-list {
+    width: 100%;
+  }
+  
+  .call-list-table thead th {
+    font-size: 0.9rem;
+    padding: 12px 8px;
+  }
+  
+  .call-list-table tbody td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .section-title {
+    font-size: 1.2rem;
+  }
+  
+  .program-title {
+    font-size: 1.3rem;
+  }
+}

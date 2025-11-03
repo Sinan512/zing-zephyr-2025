@@ -35,6 +35,11 @@ module.exports={
         var db=await connectDB();
         return await db.collection(collections.TEAM_DATA).find().toArray();
     },
+    removeTeam:async(teamName)=>{
+        var db=await connectDB();
+        const res = await db.collection(collections.TEAM_DATA).deleteOne({ teamName });
+        return res.deletedCount > 0;
+    },
     addPrograms:async(programData)=>{
         var db=await connectDB();
         var program=await db.collection(collections.PROGRAMS).findOne({programName:programData.programName});
@@ -50,6 +55,11 @@ module.exports={
         var db=await connectDB();
         return await db.collection(collections.PROGRAMS).find().toArray();
     },
+    removeProgram:async(programName)=>{
+        var db=await connectDB();
+        const res = await db.collection(collections.PROGRAMS).deleteOne({ programName });
+        return res.deletedCount > 0;
+    },
     viewCallListPrograms:async()=>{
         var db=await connectDB();
         return await db.collection(collections.CALL_LISTS).find().toArray();
@@ -63,48 +73,66 @@ module.exports={
         var db=await connectDB();
         return await db.collection(collections.TEAM_DATA).findOne({teamName:teamName});
     },
+    removeMember:async(teamName, memberName, zone)=>{
+        var db=await connectDB();
+        const result = await db.collection(collections.TEAM_DATA).updateOne(
+            { teamName: teamName },
+            { $pull: { [zone]: { member: memberName } } }
+        );
+        return result.modifiedCount > 0;
+    },
     getAllMemberPointsByZone:async()=>{
         var db=await connectDB();
-        const teams = await db.collection(collections.TEAM_DATA).find().toArray();
-        
-        // Organize members by zone - using both formats for compatibility
-        const zoneData = {
-            "Pre Zone": [],
-            "Mid Zone": [],
-            "High Zone": [],
-            preZone: [],  // Alternative key without space
-            midZone: [],  // Alternative key without space
-            highZone: []  // Alternative key without space
+        const docs = await db.collection(collections.INDIVIDUAL_POINTS).find().toArray();
+
+        // Prepare accumulators for both display keys and fallback keys used in templates
+        const agg = {
+            "Pre Zone": {},
+            "Mid Zone": {},
+            "High Zone": {},
+            preZone: {},
+            midZone: {},
+            highZone: {}
         };
 
-        teams.forEach(team => {
-            const zones = ["Pre Zone", "Mid Zone", "High Zone"];
-            zones.forEach(zone => {
-                if (Array.isArray(team[zone])) {
-                    team[zone].forEach(member => {
-                        const memberData = {
-                            member: member.member,
-                            team: team.teamName,
-                            points: member.point || 0
-                        };
-                        // Add to both key formats
-                        zoneData[zone].push(memberData);
-                        // Also add to alternative keys
-                        if (zone === "Pre Zone") zoneData.preZone.push(memberData);
-                        else if (zone === "Mid Zone") zoneData.midZone.push(memberData);
-                        else if (zone === "High Zone") zoneData.highZone.push(memberData);
-                    });
+        // Support two schemas:
+        // A) Flat documents: { participant, team, zone, totalMark }
+        // B) Single doc with arrays: { "Pre Zone": [ { member, team, totalMark }, ...], ... }
+        for (const doc of docs) {
+            if (doc["Pre Zone"] || doc["Mid Zone"] || doc["High Zone"]) {
+                // Nested arrays schema (B)
+                ["Pre Zone", "Mid Zone", "High Zone"].forEach(z => {
+                    const arr = Array.isArray(doc[z]) ? doc[z] : [];
+                    for (const m of arr) {
+                        const key = `${m.member}|${m.team}`;
+                        if (!agg[z][key]) agg[z][key] = { member: m.member, team: m.team, points: 0 };
+                        agg[z][key].points += m.totalMark || 0;
+                    }
+                });
+            } else if (doc.zone && doc.participant) {
+                // Flat per-member schema (A)
+                const z = doc.zone;
+                if (["Pre Zone", "Mid Zone", "High Zone"].includes(z)) {
+                    const key = `${doc.participant}|${doc.team}`;
+                    if (!agg[z][key]) agg[z][key] = { member: doc.participant, team: doc.team, points: 0 };
+                    agg[z][key].points += doc.totalMark || 0;
                 }
-            });
-        });
-
-        // Sort each zone by points (descending - highest first)
-        Object.keys(zoneData).forEach(zone => {
-            if (Array.isArray(zoneData[zone])) {
-                zoneData[zone].sort((a, b) => b.points - a.points);
             }
-        });
+        }
 
-        return zoneData;
+        // Build final arrays and alias to alternative keys expected by templates
+        const finalZoneData = {
+            "Pre Zone": Object.values(agg["Pre Zone"]).sort((a,b)=>b.points-a.points),
+            "Mid Zone": Object.values(agg["Mid Zone"]).sort((a,b)=>b.points-a.points),
+            "High Zone": Object.values(agg["High Zone"]).sort((a,b)=>b.points-a.points),
+            preZone: [],
+            midZone: [],
+            highZone: []
+        };
+        finalZoneData.preZone = finalZoneData["Pre Zone"]; // alias
+        finalZoneData.midZone = finalZoneData["Mid Zone"]; // alias
+        finalZoneData.highZone = finalZoneData["High Zone"]; // alias
+
+        return finalZoneData;
     }
 }

@@ -39,7 +39,13 @@
 
         <div class="list-group">
           {{#each teams}}
-            <div class="list-item fade-item">{{this.teamName}}</div>
+            <div class="list-item fade-item d-flex justify-content-between align-items-center">
+              <span>{{this.teamName}}</span>
+              <form action="/admin/remove-team" method="POST" onsubmit="return confirm('Remove team \"{{this.teamName}}\"?')">
+                <input type="hidden" name="teamName" value="{{this.teamName}}" />
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
           {{/each}}
         </div>
       </div>
@@ -117,7 +123,13 @@
         {{/if}}
         <div class="list-group">
           {{#each programs}}
-            <div class="list-item fade-item">{{this.programName}}</div>
+            <div class="list-item fade-item d-flex justify-content-between align-items-center">
+              <span>{{this.programName}}</span>
+              <form action="/admin/remove-program" method="POST" onsubmit="return confirm('Remove program \"{{this.programName}}\"?')">
+                <input type="hidden" name="programName" value="{{this.programName}}" />
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
           {{/each}}
         </div>
       </div>
@@ -156,7 +168,45 @@
           </div>
           
           <button type="submit" class="btn-reset-credentials">
-            <i class="bi bi-key-fill"></i> Reset Credentials
+            <i class="bi bi-key-fill text-dark"></i> Reset Credentials
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ADD-POINT CREDENTIALS SECTION -->
+    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
+      <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title">Add-Point Credentials</h3>
+        </div>
+        <form action="/admin/reset-addpoint-credentials" method="POST" class="admin-credentials-form">
+          <div class="input-group mb-3">
+            <label for="apUsername">Username</label>
+            <input
+              type="text"
+              id="apUsername"
+              name="username"
+              placeholder="pointer"
+              required
+              class="form-control"
+              value="pointer"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <label for="apPassword">Password</label>
+            <input
+              type="text"
+              id="apPassword"
+              name="password"
+              placeholder="point@123"
+              required
+              class="form-control"
+              value="point@123"
+            />
+          </div>
+          <button type="submit" class="btn-reset-credentials">
+            <i class="bi bi-key-fill text-dark"></i> Reset Add-Point Credentials
           </button>
         </form>
       </div>
