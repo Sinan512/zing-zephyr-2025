@@ -38,11 +38,12 @@
 
             <div class="col-md-4">
               <label class="form-label">
-                <i class="bi bi-person"></i> Member
+                <i class="bi bi-person"></i> Members
               </label>
-              <select name="member" id="memberSelect" class="modern-select form-select" multiple required>
-                <option value="" disabled>Select one or more members (Ctrl+Click)</option>
-              </select>
+              <div id="memberCheckboxes" class="member-checkbox-list">
+                <!-- dynamically filled with checkboxes -->
+                <div class="text-muted small">Select team and program to load members</div>
+              </div>
             </div>
 
             <div class="col-md-1 d-flex align-items-end">
@@ -119,8 +120,7 @@
     const program = $('#programSelect').val();
 
     if (!team || !program) {
-      $('#memberSelect').empty();
-      $('#memberSelect').append('<option value="" disabled>Select one or more members (Ctrl+Click)</option>');
+      $('#memberCheckboxes').html('<div class="text-muted small">Select team and program to load members</div>');
       return;
     }
 
@@ -128,16 +128,24 @@
     const zone = program.split(' - ')[1];
 
     $.get(`/admin/get-members/${team}/${zone}`, function(data) {
-      const memberSelect = $('#memberSelect');
-      memberSelect.empty();
-
-      // Add default info text
-      memberSelect.append('<option disabled>Select one or more members (Ctrl+Click)</option>');
-
-      // Populate members
+      const container = $('#memberCheckboxes');
+      container.empty();
+      if (!data || data.length === 0) {
+        container.html('<div class="text-danger small">No members found for this team/zone.</div>');
+        return;
+      }
+      const list = $('<div class="checkbox-grid"></div>');
       data.forEach(m => {
-        memberSelect.append(`<option value="${m.member}">${m.member}</option>`);
+        const id = `m_${m.member.replace(/[^a-zA-Z0-9_\-]/g,'_')}`;
+        const item = $(
+          `<label class="form-check form-check-inline align-items-center me-3 mb-2">
+              <input type="checkbox" class="form-check-input" name="member" value="${m.member}" />
+              <span class="form-check-label ms-1">${m.member}</span>
+           </label>`
+        );
+        list.append(item);
       });
+      container.append(list);
     });
   });
 
@@ -164,6 +172,15 @@
           $(this).fadeOut(300);
         }
       });
+    });
+
+    // Require at least one member selected on submit
+    $('#callListForm').on('submit', function(e) {
+      const anyChecked = $('#memberCheckboxes input[type="checkbox"]:checked').length > 0;
+      if (!anyChecked) {
+        e.preventDefault();
+        alert('Please select at least one member.');
+      }
     });
   });
 </script>
