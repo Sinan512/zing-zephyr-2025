@@ -58,17 +58,19 @@
       $('#programSearch').on('keyup', function() {
         table.search(this.value).draw();
       });
-      // Auto-copy Add Point link on click, then navigate
+      // Auto-copy Add Point login link (with redirect) on click, DO NOT navigate
       $(document).on('click', 'a.btn-add', async function(e) {
+        e.preventDefault();
         const href = $(this).attr('href');
+        const loginUrl = location.origin + '/admin/add-point-login?redirect=' + encodeURIComponent(href);
         try {
           if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(location.origin + href);
+            await navigator.clipboard.writeText(loginUrl);
           }
         } catch(err) {
           // ignore clipboard errors
         }
-        // proceed to page
+        // Do not navigate; user will paste the link into another browser
       });
     });
   </script>

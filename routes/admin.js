@@ -333,7 +333,7 @@ router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   const programData = `${programName} - ${zone}`; // matches the DB key format
   var codeLetters=await callListHelper.getCodeLetter(programData);
   codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
-  res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
+  res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone, hideAdminNav: true});
 });
 
 router.post("/save-points", requireAddPointAuth, async(req,res)=>{

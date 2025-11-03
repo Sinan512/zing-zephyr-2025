@@ -13,6 +13,7 @@
     </div>
 
     <!-- Navigation Buttons -->
+    {{#unless hideAdminNav}}
     <nav class="header-nav flex-shrink-0">
       <a href="/admin/enter" class="nav-btn">Home</a>
       {{#if codeLetter}}
@@ -23,6 +24,7 @@
       <a href="/admin/settings" class="nav-btn">Settings</a>
       <a href="/admin/logout" class="nav-btn">Logout</a>
     </nav>
+    {{/unless}}
 
   </div>
 
