@@ -59,7 +59,7 @@ module.exports={
         var db=await connectDB();
         const res = await db.collection(collections.PROGRAMS).deleteOne({ programName });
         return res.deletedCount > 0;
-    },
+        },
     viewCallListPrograms:async()=>{
         var db=await connectDB();
         return await db.collection(collections.CALL_LISTS).find().toArray();
@@ -67,7 +67,7 @@ module.exports={
     addMember:async(teamName,memberData)=>{
         const {memberName,zone}=memberData;
         var db=await connectDB();
-        await db.collection(collections.TEAM_DATA).updateOne({teamName:teamName},{$push:{[zone]:{member:memberName,point:0}}});
+        await db.collection(collections.TEAM_DATA).updateOne({teamName:teamName},{$push:{[zone]:{member:memberName}}});
     },
     viewTeamData:async(teamName)=>{
         var db=await connectDB();

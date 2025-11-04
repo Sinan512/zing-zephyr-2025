@@ -43,7 +43,7 @@
               <span>{{this.teamName}}</span>
               <form action="/admin/remove-team" method="POST" onsubmit="return confirm('Remove team \"{{this.teamName}}\"?')">
                 <input type="hidden" name="teamName" value="{{this.teamName}}" />
-                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
               </form>
             </div>
           {{/each}}
@@ -127,7 +127,7 @@
               <span>{{this.programName}}</span>
               <form action="/admin/remove-program" method="POST" onsubmit="return confirm('Remove program \"{{this.programName}}\"?')">
                 <input type="hidden" name="programName" value="{{this.programName}}" />
-                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
               </form>
             </div>
           {{/each}}
