@@ -3,21 +3,38 @@
 <header class="user-header">
   <div class="header-inner container-fluid d-flex align-items-center justify-content-between">
 
+
     <!-- Left Logo -->
     <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
-      <img src="/images/logo.jpg" alt="Logo" class="header-logo">
+      <img src="/images/logo.jpg" alt="Logo" class="header-logo" style="width: 40px; height: 40px;">
       <div class="fest-text ms-2 ms-md-3 flex-grow-1" style="min-width: 0;">
-        <h3 class="fest-name">{{#if fName}}{{fName}}{{else}}Zing Zephyr 2025{{/if}}</h3>
-        <p class="fest-tagline d-none d-md-block">ANNABA' STUDENTS UNION — MARKAZ MALIK DINAR PARAPPALLI</p>
+        <h3 class="fest-name" style="font-size: 1.1rem; margin-bottom: 0;">{{#if fName}}{{fName}}{{else}}Zing Zephyr 2025{{/if}}</h3>
+        <p class="fest-tagline d-none d-md-block" style="font-size: 0.75rem; margin-bottom: 0;">ANNABA' STUDENTS UNION — MARKAZ MALIK DINAR PARAPPALLI</p>
       </div>
     </div>
 
     <!-- Navigation Buttons -->
-    <nav class="header-nav flex-shrink-0">
+    <nav class="header-nav flex-shrink-0 d-none d-md-flex" id="headerNavDesktop">
       <a href="/results" class="nav-btn">Show Results</a>
       <a href="/team-status" class="nav-btn">Team Status</a>
+      <a href="/zone-toppers" class="nav-btn">View Zone Toppers</a>
       <a href="/user/enter" class="nav-btn">Home</a>
     </nav>
+
+    <!-- Mobile Menu Toggle (Right Side) -->
+<button class="mobile-menu-toggle d-md-none" id="mobileMenuToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-nav-dropdown d-md-none" id="mobileNavDropdown">
+      <a href="/results" class="nav-btn mobile-nav-item">Show Results</a>
+      <a href="/team-status" class="nav-btn mobile-nav-item">Team Status</a>
+      <a href="/zone-toppers" class="nav-btn mobile-nav-item">View Zone Toppers</a>
+      <a href="/user/enter" class="nav-btn mobile-nav-item">Home</a>
+    </div>
 
   </div>
 
@@ -33,3 +50,38 @@
     </div>
   </div>
 </header>
+
+<script>
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('mobileMenuToggle');
+    const dropdown = document.getElementById('mobileNavDropdown');
+    
+    if (toggle && dropdown) {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = toggle.classList.toggle('active');
+        dropdown.classList.toggle('active', isActive);
+        toggle.setAttribute('aria-expanded', isActive);
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
+          toggle.classList.remove('active');
+          dropdown.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close menu when clicking a nav item
+      dropdown.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+          toggle.classList.remove('active');
+          dropdown.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  });
+</script>

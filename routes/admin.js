@@ -254,10 +254,24 @@ if (!Array.isArray(members)) {
       }));
     });
     
-  res.render("admin/call-list", { admin: true, codeLetter: true, fName, teams, programs ,groupedCallList});
+  res.redirect("/admin/call-list");
 });
 
-router.get("/code-letter-add", requireAuth, async(req,res)=>{
+router.post("/remove-call-list-member", requireAuth, async (req, res) => {
+  try {
+    const { program, member, team } = req.body;
+    const success = await callListHelper.removeCallListMember(program, member, team);
+    if (success) {
+      res.redirect("/admin/call-list");
+    } else {
+      res.redirect("/admin/call-list?error=Failed to remove member");
+    }
+  } catch (error) {
+    res.redirect("/admin/call-list?error=" + error.message);
+  }
+});
+
+router.get("/code-letter-add", requireAddPointAuth, async(req,res)=>{
   
    let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
@@ -296,8 +310,13 @@ router.post('/add-code-letter', requireAuth, async(req,res)=>{
 router.get("/edit-result", requireAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
-  var programs = await programHelper.viewCallListPrograms();
-  programs = programs.map(p => {
+  var allPrograms = await programHelper.viewCallListPrograms();
+  // Filter only programs that have code letters assigned
+  const programsWithCodes = allPrograms.filter(p => {
+    if (!p.participants || !Array.isArray(p.participants)) return false;
+    return p.participants.some(participant => participant.codes && participant.codes.trim().length > 0);
+  });
+  programs = programsWithCodes.map(p => {
   const [programName, zone] = p.program.split(" - ");
   return {
     programName: programName.trim(),
@@ -337,9 +356,13 @@ router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
 });
 
 router.post("/save-points", requireAddPointAuth, async(req,res)=>{
-  await resultHelper.addPoint(req.body);
-  
+  try {
+    await resultHelper.addPoint(req.body);
     res.redirect('/user/enter');
+  } catch(error) {
+    console.error("Error saving points:", error);
+    res.redirect('/user/enter?error=Failed to save points');
+  }
 });
 
 router.get("/view-result", requireAuth, async (req,res)=>{
@@ -446,6 +469,18 @@ router.post("/publish-team-points", requireAuth, async (req, res) => {
     res.json({ 
       success: true, 
       message: `Team points published successfully! ${result.teamsCount} teams published (After ${result.programCount} program${result.programCount !== 1 ? 's' : ''}).`
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+router.post("/publish-zone-toppers", requireAuth, async (req, res) => {
+  try {
+    const result = await resultHelper.publishZoneToppers();
+    res.json({ 
+      success: true, 
+      message: result.message || "Zone toppers published successfully!"
     });
   } catch (error) {
     res.json({ success: false, message: error.message });

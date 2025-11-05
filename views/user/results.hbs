@@ -8,18 +8,18 @@
           <i class="bi bi-trophy-fill"></i> Published Results
         </h2>
 
-        <!-- Search Bar -->
-        <div class="search-container mb-4">
+        <!-- 🔍 Single Universal Search Bar -->
+        <div class="search-container mb-5">
           <div class="search-wrapper">
             <i class="bi bi-search search-icon"></i>
             <input 
               type="text" 
-              id="programSearchInput" 
+              id="globalSearchInput" 
               class="program-search-input" 
-              placeholder="🔍 Search by Program Name..." 
+              placeholder="🔍 Search by Program Name or Member Name..." 
               autocomplete="off"
             />
-            <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" onclick="clearSearch()">
+            <button class="clear-search-btn" id="clearGlobalSearchBtn" style="display: none;" onclick="clearGlobalSearch()">
               <i class="bi bi-x-lg"></i>
             </button>
           </div>
@@ -44,39 +44,18 @@
                     {{#if (length this.top3)}}
                     <div class="winners-container">
                       {{#each this.top3}}
-                      {{#if (eq this.position 1)}}
-                      <!-- First Prize -->
-                      <div class="winner-card winner-first">
-                        <div class="prize-icon">🥇</div>
+                      <div class="winner-card {{#if (eq this.position 1)}}winner-first{{else if (eq this.position 2)}}winner-second{{else if (eq this.position 3)}}winner-third{{/if}}">
+                        <div class="prize-icon">
+                          {{#if (eq this.position 1)}}🥇{{else if (eq this.position 2)}}🥈{{else if (eq this.position 3)}}🥉{{/if}}
+                        </div>
                         <div class="winner-info">
-                          <span class="prize-label">First Prize</span>
+                          <span class="prize-label">
+                            {{#if (eq this.position 1)}}First Prize{{else if (eq this.position 2)}}Second Prize{{else if (eq this.position 3)}}Third Prize{{/if}}
+                          </span>
                           <h4 class="winner-name">{{this.participant}}</h4>
                           <span class="winner-team">{{this.team}}</span>
                         </div>
                       </div>
-                      {{/if}}
-                      {{#if (eq this.position 2)}}
-                      <!-- Second Prize -->
-                      <div class="winner-card winner-second">
-                        <div class="prize-icon">🥈</div>
-                        <div class="winner-info">
-                          <span class="prize-label">Second Prize</span>
-                          <h4 class="winner-name">{{this.participant}}</h4>
-                          <span class="winner-team">{{this.team}}</span>
-                        </div>
-                      </div>
-                      {{/if}}
-                      {{#if (eq this.position 3)}}
-                      <!-- Third Prize -->
-                      <div class="winner-card winner-third">
-                        <div class="prize-icon">🥉</div>
-                        <div class="winner-info">
-                          <span class="prize-label">Third Prize</span>
-                          <h4 class="winner-name">{{this.participant}}</h4>
-                          <span class="winner-team">{{this.team}}</span>
-                        </div>
-                      </div>
-                      {{/if}}
                       {{/each}}
                     </div>
                     {{else}}
@@ -106,51 +85,63 @@
 </div>
 
 <script>
-  // Search functionality
+  const publishedResults = {{{json publishedResults}}};
   let searchTimeout;
-  $('#programSearchInput').on('keyup input', function () {
+
+  $('#globalSearchInput').on('keyup input', function () {
     const searchValue = $(this).val().trim().toLowerCase();
-    
+
     // Show/hide clear button
     if (searchValue.length > 0) {
-      $('#clearSearchBtn').fadeIn(200);
+      $('#clearGlobalSearchBtn').fadeIn(200);
     } else {
-      $('#clearSearchBtn').fadeOut(200);
+      $('#clearGlobalSearchBtn').fadeOut(200);
     }
 
-    // Debounce search
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(function() {
-      $('.result-item').each(function() {
+    searchTimeout = setTimeout(function () {
+      $('.result-item').each(function () {
         const programName = $(this).data('program').toLowerCase();
-        if (programName.includes(searchValue)) {
+        const program = publishedResults.find(p => p.programName.toLowerCase() === programName);
+        let matches = false;
+
+        // Match program name
+        if (programName.includes(searchValue)) matches = true;
+
+        // Match any participant name
+        if (program && program.top3) {
+          for (const winner of program.top3) {
+            if (winner.participant.toLowerCase().includes(searchValue)) {
+              matches = true;
+              break;
+            }
+          }
+        }
+
+        // Show or hide
+        if (matches || searchValue.length === 0) {
           $(this).fadeIn(300);
         } else {
           $(this).fadeOut(300);
         }
       });
-      
-      // Update result count
+
+      // Update count
       const visibleCount = $('.result-item:visible').length;
       const totalCount = $('.result-item').length;
-      
       if (searchValue.length > 0) {
-        $('#resultCount').text(visibleCount);
         $('#searchInfo').html(`<span id="resultCount">${visibleCount}</span> of <span>${totalCount}</span> program result(s) found`);
       } else {
-        $('#resultCount').text(totalCount);
         $('#searchInfo').html(`<span id="resultCount">${totalCount}</span> program result(s) found`);
       }
     }, 300);
   });
 
-  function clearSearch() {
-    $('#programSearchInput').val('');
-    $('#clearSearchBtn').fadeOut(200);
+  function clearGlobalSearch() {
+    $('#globalSearchInput').val('');
+    $('#clearGlobalSearchBtn').fadeOut(200);
     $('.result-item').fadeIn(300);
     const totalCount = $('.result-item').length;
-    $('#resultCount').text(totalCount);
     $('#searchInfo').html(`<span id="resultCount">${totalCount}</span> program result(s) found`);
   }
 </script>
-

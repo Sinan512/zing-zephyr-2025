@@ -171,7 +171,15 @@ $(document).ready(function() {
       // POST to server
       $.post("/admin/add-code-letter", { program, codes }, function(res) {
         if (res && res.success) {
-          Swal.fire("✅ Success!", res.message || "Codes saved.", "success");
+          Swal.fire({
+            title: "✅ Success!",
+            text: res.message || "Code letter added successfully",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/user/enter";
+          });
         } else {
           Swal.fire("❌ Error!", (res && res.message) || "Server error. Try again.", "error");
         }

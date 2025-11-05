@@ -63,4 +63,18 @@ router.get('/user/enter', async function(req, res, next) {
   });
 });
 
+router.get('/zone-toppers', async function(req, res, next) {
+  let fName = await programHelper.GetFestName();
+  fName = fName[0] ? fName[0].festName : 'Zing Zephyr 2025';
+  
+  // Get published zone toppers
+  const publishedZoneToppers = await resultHelper.getPublishedZoneToppers();
+  console.log(publishedZoneToppers);
+  
+  res.render('user/zone-toppers', { 
+    fName, 
+    zoneToppers: publishedZoneToppers || {}
+  });
+});
+
 module.exports = router;

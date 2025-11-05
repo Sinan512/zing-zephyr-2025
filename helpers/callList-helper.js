@@ -93,6 +93,14 @@ getCodeLetter:async(programData)=>{
   { projection: { "participants.codes": 1, _id: 0 } } // 👈 only return code letters
 );
 return codeletters?.participants || [];
+},
+removeCallListMember:async(program, member, team)=>{
+  const db = await connectDB();
+  const result = await db.collection(collections.CALL_LISTS).updateOne(
+    { program },
+    { $pull: { participants: { participant: member, team: team } } }
+  );
+  return result.modifiedCount > 0;
 }
 
 };

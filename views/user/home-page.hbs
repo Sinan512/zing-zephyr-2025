@@ -44,9 +44,9 @@
       <div class="row g-4">
         {{#each teams}}
         <div class="col-12 col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="{{@index}}00">
-          <div class="team-card-historical" data-team="{{this.teamName}}">
+          <div class="team-card-historical" data-team="{{this.teamName}}" style="{{#if this.teamColor}}border-top: 4px solid {{this.teamColor}}; {{/if}}">
             <div class="team-header">
-              <div class="team-icon-wrapper">
+              <div class="team-icon-wrapper" style="{{#if this.teamColor}}color: {{this.teamColor}};{{/if}}">
                 <i class="bi bi-flag-fill"></i>
               </div>
               <h3 class="team-name-hist">{{this.teamName}}</h3>

@@ -8,5 +8,6 @@ module.exports={
     PENDING_RESULTS:"pendingResults",
     PUBLISHED:"published",
     PUBLISHED_TEAM:"publishedTeam",
+    PUBLISHED_ZONE_TOPPERS:"publishedZoneToppers",
     INDIVIDUAL_POINTS:"individualPoints"
 };

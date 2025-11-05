@@ -66,11 +66,26 @@
         try {
           if (navigator.clipboard && window.isSecureContext) {
             await navigator.clipboard.writeText(loginUrl);
+            showToast('Point adding link copied to clipboard', 'success');
+          } else {
+            showToast('Failed to copy link', 'error');
           }
         } catch(err) {
-          // ignore clipboard errors
+          showToast('Failed to copy link', 'error');
         }
         // Do not navigate; user will paste the link into another browser
       });
+
+      function showToast(message, type) {
+        const toast = $(`
+          <div class="toast-notification toast-${type}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px 20px; background: ${type === 'success' ? '#28a745' : '#dc3545'}; color: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); animation: slideIn 0.3s ease;">
+            ${message}
+          </div>
+        `);
+        $('body').append(toast);
+        setTimeout(() => {
+          toast.fadeOut(300, () => toast.remove());
+        }, 3000);
+      }
     });
   </script>

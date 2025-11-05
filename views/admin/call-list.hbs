@@ -82,6 +82,7 @@
                     <th>#</th>
                     <th>Member</th>
                     <th>Team</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -91,6 +92,14 @@
                     <td class="member-name">{{member}}</td>
                     <td>
                       <span class="team-badge">{{team}}</span>
+                    </td>
+                    <td>
+                      <form action="/admin/remove-call-list-member" method="POST" onsubmit="return confirm('Remove {{member}} from {{@../key}}?')" style="display: inline;">
+                        <input type="hidden" name="program" value="{{@../key}}" />
+                        <input type="hidden" name="member" value="{{member}}" />
+                        <input type="hidden" name="team" value="{{team}}" />
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+                      </form>
                     </td>
                   </tr>
                   {{/each}}

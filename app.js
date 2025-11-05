@@ -38,6 +38,9 @@ app.engine("hbs", engine({
         return arr[index] || null;
       }
       return null;
+    },
+    json: (context) => {
+      return JSON.stringify(context);
     }
   }
 }));

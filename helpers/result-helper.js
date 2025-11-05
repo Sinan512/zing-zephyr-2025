@@ -542,5 +542,48 @@ for (const r of results) {
       };
     }
     return { teams: [], programCount: 0 };
+  },
+  // Publish zone toppers (similar to team points)
+  publishZoneToppers:async()=>{
+    var db=await connectDB();
+    const programHelper = require("./program-helper");
+    const zoneData = await programHelper.getAllMemberPointsByZone();
+    
+    // Delete existing published zone toppers
+    await db.collection(collections.PUBLISHED_ZONE_TOPPERS).deleteMany({});
+    
+    // Add to published zone toppers collection
+    await db.collection(collections.PUBLISHED_ZONE_TOPPERS).insertOne({
+      preZone: zoneData["Pre Zone"] || [],
+      midZone: zoneData["Mid Zone"] || [],
+      highZone: zoneData["High Zone"] || [],
+      publishedAt: new Date()
+    });
+    
+    return { success: true, message: "Zone toppers published successfully" };
+  },
+  // Get published zone toppers
+ getPublishedZoneToppers: async () => {
+  const db = await connectDB();
+  const publishedZoneToppers = await db.collection(collections.PUBLISHED_ZONE_TOPPERS).findOne();
+
+  if (publishedZoneToppers) {
+    // Helper function to get the highest scorer from a list
+    const getTopper = (zoneList) => {
+      if (!Array.isArray(zoneList) || zoneList.length === 0) return null;
+      return zoneList.reduce((top, current) =>
+        current.points > top.points ? current : top
+      );
+    };
+
+    return {
+      preZone: getTopper(publishedZoneToppers.preZone),
+      midZone: getTopper(publishedZoneToppers.midZone),
+      highZone: getTopper(publishedZoneToppers.highZone),
+      publishedAt: publishedZoneToppers.publishedAt
+    };
   }
+
+  return null;
+}
 };
