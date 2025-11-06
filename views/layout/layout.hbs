@@ -27,6 +27,22 @@
 <style>
   body{
   background: linear-gradient(135deg, rgb(57, 34, 96), rgb(139, 28, 203));
+  :root {
+  --vh: 1vh;
+}
+@media (max-width: 768px) {
+  .premium-page {
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+}
+window.addEventListener('resize', () => {
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+});
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
   }
 </style>
   </head>
@@ -48,7 +64,7 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  AOS.init({ duration: 1200, once: true, easing: 'ease-in-out' });
+  AOS.init({ duration: 600, once: true, easing: 'ease-in-out' });
 </script>
   </body>
 </html>

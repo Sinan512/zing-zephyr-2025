@@ -13,14 +13,14 @@
 
 /* page background */
 .premium-page {
-  min-height: 100vh;
+  min-height: 100%;
   background: radial-gradient(1200px 600px at 10% 20%, rgba(155,92,246,0.12), transparent 8%),
               radial-gradient(900px 500px at 90% 80%, rgba(255,122,162,0.06), transparent 6%),
               linear-gradient(160deg, var(--bg-1), var(--bg-2));
-  padding-bottom: 6rem;
+  padding-bottom: 0rem;
   font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   -webkit-font-smoothing: antialiased;
-  color: white;
+  color: rgb(239, 3, 3);
 }
 
 /* title animations */
@@ -198,6 +198,14 @@
   animation: shake 0.25s ease;
   background: rgba(255, 0, 0, 0.05);
 }
+.team-col span,
+td span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;   /* or inline-block */
+}
+
 
 @keyframes shake {
   0% { transform: translateX(0); }
@@ -214,6 +222,10 @@
   .header-controls .btn { font-size: 12px; padding: 6px 8px; }
   .table-head th, .table-row td { padding: 10px 8px; font-size: 14px; }
   .search-wrap { padding: 6px; }
+  .team-col span {
+    width: auto !important;
+    max-width: 180px;  /* optional */
+  }
 }
 
 /* fade-up animation for cards */

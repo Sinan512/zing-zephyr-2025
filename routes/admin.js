@@ -20,11 +20,21 @@ const requireAuth = async (req, res, next) => {
 authHelper.initializeAdmin();
 // Initialize separate add-point credentials
 authHelper.initializeAddPoint();
+// Initialize separate add-code letter credentials
+authHelper.initializeAddCodeLetter();
 
 // Middleware for add-point separate auth
 const requireAddPointAuth = async (req, res, next) => {
   if (!authHelper.isAddPointSessionValid(req)) {
     return res.redirect(`/admin/add-point-login?redirect=${encodeURIComponent(req.originalUrl)}`);
+  }
+  next();
+};
+
+// Middleware for add-code letter separate auth
+const requireAddCodeLetterAuth = async (req, res, next) => {
+  if (!authHelper.isAddCodeLetterSessionValid(req)) {
+    return res.redirect(`/admin/add-code-letter-login?redirect=${encodeURIComponent(req.originalUrl)}`);//pending to set
   }
   next();
 };
@@ -103,6 +113,18 @@ router.post("/reset-addpoint-credentials", requireAuth, async (req, res) => {
     res.redirect("/admin/settings?error=Failed to update Add-Point credentials");
   }
 });
+
+// Reset Add-Code Letter credentials (separate)
+router.post("/reset-addcodeletter-credentials", requireAuth, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    await authHelper.updateAddCodeLetter(username, password);
+    res.redirect("/admin/settings?success=Add-code letter credentials updated successfully");
+  } catch (error) {
+    res.redirect("/admin/settings?error=Failed to update Add-code letter credentials");
+  }
+});
+
 
 router.post("/add-team", requireAuth, async (req, res) => {
   var teamName = { ...req.body };
@@ -271,7 +293,7 @@ router.post("/remove-call-list-member", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/code-letter-add", requireAddPointAuth, async(req,res)=>{
+router.get("/code-letter-add",requireAuth, async(req,res)=>{
   
    let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
@@ -286,6 +308,23 @@ router.get("/code-letter-add", requireAddPointAuth, async(req,res)=>{
       }));
     });
   res.render("admin/code-letter-add",{admin:true, fName, programs ,groupedCallList});
+});
+//code letter add page with login
+router.get("/code-letter-add-login",requireAddCodeLetterAuth, async(req,res)=>{
+  
+   let fName = await programHelper.GetFestName();
+  fName = fName[0].festName;
+  var programs = await programHelper.viewPrograms();
+   let callListData = await callListHelper.viewCallList();
+    let groupedCallList = {};
+    callListData.forEach((prog) => {
+      // Convert participant objects for Handlebars
+      groupedCallList[prog.program] = prog.participants.map((p) => ({
+        member: p.participant, // rename for template
+        team: p.team
+      }));
+    });
+  res.render("admin/code-letter-add",{fName, programs ,groupedCallList});
 });
 
 router.post('/add-code-letter', requireAuth, async(req,res)=>{
@@ -324,13 +363,19 @@ router.get("/edit-result", requireAuth, async(req,res)=>{
   };
 });
   
-res.render("admin/select-program",{admin:true,fName, programs})
+res.render("admin/select-program",{admin:true,fName, programs,codeLetterLog:true})
 });
 
 // Add-Point separate login routes
 router.get("/add-point-login", async (req, res) => {
   const redirect = req.query.redirect || "";
   res.render("admin/login", { cover: true, addPoint: true, redirect });
+});
+
+// Add-Code Letter separate login routes
+router.get("/add-code-letter-login", async (req, res) => {
+  const redirect = req.query.redirect || "";
+  res.render("admin/login", { cover: true, addCodeLetter: true, redirect });
 });
 
 router.post("/add-point-login", async (req, res) => {
@@ -345,6 +390,19 @@ router.post("/add-point-login", async (req, res) => {
   res.render("admin/login", { cover: true, addPoint: true, error: "Invalid username or password", redirect: redirectBody || req.query.redirect || "" });
 });
 
+
+router.post("/add-code-letter-login", async (req, res) => {
+  const { username, password, redirect: redirectBody } = req.body;
+  const isValid = await authHelper.verifyAddCodeLetter(username, password);
+  if (isValid) {
+    req.session.addCodeLetterLoggedIn = true;
+    req.session.addCodeLetterLastActivity = Date.now();
+    const redirect = redirectBody || req.query.redirect || "/admin/edit-result";
+    return res.redirect(redirect);
+  }
+  res.render("admin/login", { cover: true, addCodeLetter: true, error: "Invalid username or password", redirect: redirectBody || req.query.redirect || "" });
+});
+
 router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
@@ -353,6 +411,17 @@ router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   var codeLetters=await callListHelper.getCodeLetter(programData);
   codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
   res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone, hideAdminNav: true});
+});// pending to set
+//add point without login 
+
+router.get("/add-point-noLog/", requireAuth, async(req,res)=>{
+  let fName = await programHelper.GetFestName();
+  fName = fName[0].festName;
+  let {programName, zone}=req.query;
+  const programData = `${programName} - ${zone}`; // matches the DB key format
+  var codeLetters=await callListHelper.getCodeLetter(programData);
+  codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
+  res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
 });
 
 router.post("/save-points", requireAddPointAuth, async(req,res)=>{

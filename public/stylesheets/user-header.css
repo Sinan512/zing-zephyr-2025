@@ -308,6 +308,9 @@
   @media (min-width: 768px) {
     .mobile-menu-toggle,
     .mobile-nav-dropdown {
-      display: none !important;
+      display: grid !important;
+       right: 0 !important;
+      left: auto !important;
     }
   }
+  

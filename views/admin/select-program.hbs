@@ -25,11 +25,12 @@
             </thead>
             <tbody>
               {{#each programs}}
-              <tr class="program-row">
+              <tr class="program-row text-uppercase">
                 <td class="ps-4">{{this.programName}}</td>
                 <td class="ps-4">{{this.zone}}</td>
                 <td class="text-center">
-                  <a href="/admin/add-point?programName={{this.programName}}&zone={{this.zone}}" class="btn btn-add" data-program="{{this.programName}}" data-zone="{{this.zone}}">Add Point</a>
+                  <a href="/admin/add-point?programName={{this.programName}}&zone={{this.zone}}" class="btn btn-add" data-program="{{this.programName}}" data-zone="{{this.zone}}">Copy Link</a>
+                  <a href="/admin/add-point-noLog?programName={{this.programName}}&zone={{this.zone}}" class="btn btn-sAdd" >Add Point</a>
                 </td>
               </tr>
               {{/each}}

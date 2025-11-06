@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/stylesheets/admin-header.css">
 
-<header class="admin-header">
+<header class="admin-header p-2">
   <div class="header-inner container-fluid d-flex align-items-center justify-content-between">
 
     <!-- Left Logo -->
@@ -12,20 +12,29 @@
       </div>
     </div>
 
-    <!-- Navigation Buttons -->
+    
+    <!-- Mobile Menu Toggle (Right Side) -->
+<button class="mobile-menu-toggle d-md-none" id="mobileMenuToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-nav-dropdown d-md-none" id="mobileNavDropdown">
+     <!-- Navigation Buttons -->
     {{#unless hideAdminNav}}
-    <nav class="header-nav flex-shrink-0">
-      <a href="/admin/enter" class="nav-btn">Home</a>
+      <a href="/admin/enter" class="nav-btn mobile-nav-item">Home</a>
       {{#if codeLetter}}
-      <a href="/admin/code-letter-add" class="nav-btn">Code Letter</a>
+      <a href="/admin/code-letter-add" class="nav-btn mobile-nav-item">Code Letter</a>
+      {{else if codeLetterLog}}
+      <a href="/admin/code-letter-add-login" class="nav-btn mobile-nav-item btn-copy">copy Code link</a>
       {{else}}
-      <a href="/admin/view-result" class="nav-btn">Result</a>
+      <a href="/admin/view-result" class="nav-btn mobile-nav-item">Result</a>
       {{/if}}
-      <a href="/admin/settings" class="nav-btn">Settings</a>
-      <a href="/admin/logout" class="nav-btn">Logout</a>
-    </nav>
+      <a href="/admin/settings" class="nav-btn mobile-nav-item">Settings</a>
+      <a href="/admin/logout" class="nav-btn mobile-nav-item">Logout</a>
     {{/unless}}
-
+    </div>
   </div>
 
   <!-- Marquee Line -->
@@ -40,3 +49,70 @@
     </div>
   </div>
 </header>
+
+<script>
+    $(document).ready(function() {
+   // Auto-copy Add Point login link (with redirect) on click, DO NOT navigate
+      $(document).on('click', 'a.btn-copy', async function(e) {
+        e.preventDefault();
+        const href = $(this).attr('href');
+        const loginUrl = location.origin + '/admin/add-code-letter-login?redirect=' + encodeURIComponent(href);
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(loginUrl);
+            showToast('code letter adding link copied to clipboard', 'success');
+          } else {
+            showToast('Failed to copy link', 'error');
+          }
+        } catch(err) {
+          showToast('Failed to copy link', 'error');
+        }
+        // Do not navigate; user will paste the link into another browser
+      });
+      //toast
+      function showToast(message, type) {
+        const toast = $(`
+          <div class="toast-notification toast-${type}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px 20px; background: ${type === 'success' ? '#28a745' : '#dc3545'}; color: white; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); animation: slideIn 0.3s ease;">
+            ${message}
+          </div>
+        `);
+        $('body').append(toast);
+        setTimeout(() => {
+          toast.fadeOut(300, () => toast.remove());
+        }, 3000);
+      }
+
+    });
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('mobileMenuToggle');
+    const dropdown = document.getElementById('mobileNavDropdown');
+    
+    if (toggle && dropdown) {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = toggle.classList.toggle('active');
+        dropdown.classList.toggle('active', isActive);
+        toggle.setAttribute('aria-expanded', isActive);
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
+          toggle.classList.remove('active');
+          dropdown.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close menu when clicking a nav item
+      dropdown.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+          toggle.classList.remove('active');
+          dropdown.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  });
+</script>

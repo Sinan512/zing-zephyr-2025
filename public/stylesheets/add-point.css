@@ -17,9 +17,8 @@
       animation: bgMove 10s ease infinite;
       color: #fff;
       font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
+      min-height: 100%;
       overflow-x: hidden;
-      padding-bottom: 60px;
     }
 
     @keyframes bgMove {

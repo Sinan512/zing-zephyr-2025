@@ -49,6 +49,26 @@ module.exports = {
       console.log("✅ Add-Point credentials initialized");
     }
   },
+  // Initialize separate Add-code letter credentials if not exist
+  initializeAddCodeLetter: async () => {
+    const db = await connectDB();
+    const festNameCollection = db.collection(collections.FEST_NAME);
+    const existing = await festNameCollection.findOne();
+    if (!existing || !existing.addCodeLetterUsername) {
+      const hashedPassword = module.exports.hashPassword("point@123");
+      await festNameCollection.updateOne(
+        {},
+        {
+          $set: {
+            addCodeLetterUsername: "coder",
+            addCodeLetterPassword: hashedPassword
+          }
+        },
+        { upsert: true }
+      );
+      console.log("✅ Add-code letter credentials initialized");
+    }
+  },
   
   // Verify admin credentials
   verifyAdmin: async (username, password) => {
@@ -71,6 +91,15 @@ module.exports = {
     if (!creds || !creds.addPointPassword) return false;
     const hashedInput = module.exports.hashPassword(password);
     return hashedInput === creds.addPointPassword;
+  },
+  // Verify add-code letter credentials
+  verifyAddCodeLetter: async (username, password) => {
+    const db = await connectDB();
+    const festNameCollection = db.collection(collections.FEST_NAME);
+    const creds = await festNameCollection.findOne({ addCodeLetterUsername: username });
+    if (!creds || !creds.addCodeLetterPassword) return false;
+    const hashedInput = module.exports.hashPassword(password);
+    return hashedInput === creds.addCodeLetterPassword;
   },
   
   // Update admin credentials
@@ -104,6 +133,18 @@ module.exports = {
     );
     return true;
   },
+   // Optionally allow updating add-code letter credentials (not wired to UI here)
+  updateAddCodeLetter: async (username, password) => {
+    const db = await connectDB();
+    const festNameCollection = db.collection(collections.FEST_NAME);
+    const hashedPassword = module.exports.hashPassword(password);
+    await festNameCollection.updateOne(
+      {},
+      { $set: { addCodeLetterUsername: username, addCodeLetterPassword: hashedPassword } },
+      { upsert: true }
+    );
+    return true;
+  },
   
   // Check if session is valid (not expired)
   isSessionValid: (req) => {
@@ -130,6 +171,16 @@ module.exports = {
       return false;
     }
     req.session.addPointLastActivity = now;
+    return true;
+  },
+  // Check separate add-code letter session
+  isAddCodeLetterSessionValid: (req) => {
+    if (!req.session || !req.session.addCodeLetterLoggedIn) return false;
+    const now = Date.now();
+    if (req.session.addCodeLetterLastActivity && (now - req.session.addCodeLetterLastActivity) > 15 * 60 * 1000) {
+      return false;
+    }
+    req.session.addCodeLetterLastActivity = now;
     return true;
   }
 };
