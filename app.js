@@ -53,14 +53,17 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// IMPORTANT for Render (sessions behind proxy)
+app.set("trust proxy", 1);
 app.use(session({
   secret: process.env.SESSION_SECRET || "zing-zephyr-2025-secret-key",
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    maxAge: 15 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' // Enable secure cookies in production
+    secure: process.env.NODE_ENV === "production",  // true only in production
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24  // 1 day
   }
 }));
 
