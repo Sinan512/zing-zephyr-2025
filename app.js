@@ -54,13 +54,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-  secret: "zing-zephyr-2025-secret-key",
+  secret: process.env.SESSION_SECRET || "zing-zephyr-2025-secret-key",
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 15 * 60 * 1000,
     httpOnly: true,
-    secure: false // Set to true if using HTTPS
+    secure: process.env.NODE_ENV === 'production' // Enable secure cookies in production
   }
 }));
 
