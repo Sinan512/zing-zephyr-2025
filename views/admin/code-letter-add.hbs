@@ -26,6 +26,9 @@
         <!-- header with program title + control buttons -->
         <div class="program-card-header d-flex align-items-center justify-content-between px-4 py-3">
           <h4 class="fw-bold text-warning mb-0 program-title">{{@key}}</h4>
+          {{#if (lookup ../codeletterAdded @key)}}
+            <h4 class="fw-bold text-success fst-italic mb-0 program-title">ALREADY ADDED</h4>
+          {{/if}}
           <div class="header-controls">
             <a class="btn btn-sm submit-head-btn" data-program="{{@key}}">Submit Codes</a>
           </div>
@@ -44,9 +47,6 @@
               </thead>
               <tbody>
                 {{#each this}}
-                {{#if codes}}
-                <h4 class="fw-bold text-success fst-italic mb-0 program-title">CODE LETTER ALREADY ADDED</h4>
-                {{/if}}
                 <tr class="table-row">
                   <td class="text-truncate participant-cell" title="{{member}}">{{member}}</td>
                   <td><span class="w-220px px-3 py-2">{{team}}</span></td>
@@ -58,7 +58,8 @@
                       data-member="{{member}}" 
                       data-program="{{@../key}}" 
                       data-team="{{team}}" 
-                      maxlength="4">
+                      maxlength="4"
+                      value="{{codes}}">
                     <small class="duplicate-warning">Duplicate Code!</small>
                   </td>
                 </tr>

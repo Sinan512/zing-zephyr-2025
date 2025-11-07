@@ -299,7 +299,7 @@ router.get("/code-letter-add",requireAuth, async(req,res)=>{
   
    let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
-  var programs = await programHelper.viewPrograms();
+  let programs = await programHelper.viewPrograms();
    let callListData = await callListHelper.viewCallList();
     let groupedCallList = {};
     callListData.forEach((prog) => {
@@ -310,7 +310,12 @@ router.get("/code-letter-add",requireAuth, async(req,res)=>{
         codes:p.codes
       }));
     });
-  res.render("admin/code-letter-add",{admin:true, fName, programs ,groupedCallList});
+   let codeletterAdded = {};
+  Object.keys(groupedCallList).forEach(program => {
+  codeletterAdded[program] = groupedCallList[program].some(p => p.codes);
+  });
+    console.log(codeletterAdded);
+  res.render("admin/code-letter-add",{admin:true, fName, programs ,codeletterAdded,groupedCallList});
 });
 //code letter add page with login
 router.get("/code-letter-add-login",requireAddCodeLetterAuth, async(req,res)=>{
