@@ -66,6 +66,15 @@
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
+  animation: slideUp 2s ;
+}
+@keyframes slideUp {
+  0%{
+    transform: translateY(-25%);
+  }
+  100%{
+    transform: translateY(0%);
+  }
 }
 
 .btn-hero {

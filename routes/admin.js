@@ -314,7 +314,6 @@ router.get("/code-letter-add",requireAuth, async(req,res)=>{
   Object.keys(groupedCallList).forEach(program => {
   codeletterAdded[program] = groupedCallList[program].some(p => p.codes);
   });
-    console.log(codeletterAdded);
   res.render("admin/code-letter-add",{admin:true, fName, programs ,codeletterAdded,groupedCallList});
 });
 //code letter add page with login
@@ -329,13 +328,18 @@ router.get("/code-letter-add-login",requireAddCodeLetterAuth, async(req,res)=>{
       // Convert participant objects for Handlebars
       groupedCallList[prog.program] = prog.participants.map((p) => ({
         member: p.participant, // rename for template
-        team: p.team
+        team: p.team,
+        codes:p.codes
       }));
     });
-  res.render("admin/code-letter-add",{fName, programs ,groupedCallList});
+    let codeletterAdded = {};
+  Object.keys(groupedCallList).forEach(program => {
+  codeletterAdded[program] = groupedCallList[program].some(p => p.codes);
+  });
+  res.render("admin/code-letter-add",{fName, programs ,codeletterAdded,groupedCallList});
 });
 
-router.post('/add-code-letter', requireAuth, async(req,res)=>{
+router.post('/add-code-letter', async(req,res)=>{
   const { program } = req.body;
     const codes = [];
     // Convert the nested form data into an array
