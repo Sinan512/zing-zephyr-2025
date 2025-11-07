@@ -7,14 +7,14 @@ body, html {
   height: 100%;
   margin: 0;
   overflow-x: hidden;
-  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  background: #ffffff;
   font-family: "Poppins", sans-serif;
 }
 
 /* --- Animated gradient background --- */
 #cover {
   position: relative;
-  background: linear-gradient(120deg, #fefefe, #f8f9fa, #fefefe);
+  background: #ffffff
   animation: gradientMove 12s ease-in-out infinite alternate, fadeInPage 1.5s ease forwards;
   overflow: hidden;
 }

@@ -8,7 +8,11 @@
 
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10">
+      {{#if admin}}
+      <form action="/admin/save-points-admin" method="POST">
+      {{else}}
       <form action="/admin/save-points" method="POST">
+      {{/if}}
         <input type="hidden" name="programName" value="{{programName}}" />
         <input type="hidden" name="zone" value="{{zone}}" />
 

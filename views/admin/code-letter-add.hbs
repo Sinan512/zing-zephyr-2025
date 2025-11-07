@@ -6,7 +6,7 @@
   <!-- Page Title -->
   <div class="text-center mb-4">
     <h2 class="fw-bold text-light display-6 fade-slide"> Assign Code Letters to Participants</h2>
-    <p class="text-hint opacity-25 lead fade-slide">Search by program and add unique code letters to each participant.</p>
+    <p class="text-dark opacity-50 lead fade-slide">Search by program and add unique code letters to each participant.</p>
   </div>
 
   <!-- 🔍 Program Search -->
@@ -14,7 +14,7 @@
     <div class="search-wrap mx-auto w-100 w-md-75">
       <label for="programSearch" class="visually-hidden">Search Program</label>
       <input type="text" id="programSearch" class="form-control shadow search-input" placeholder="🔎 Search Program...">
-      <div class="search-hint">Type to filter programs • works on mobile & desktop</div>
+      <div class="search-hint">Type to filter programs</div>
     </div>
   </div>
 
@@ -44,6 +44,9 @@
               </thead>
               <tbody>
                 {{#each this}}
+                {{#if codes}}
+                <h4 class="fw-bold text-success fst-italic mb-0 program-title">CODE LETTER ALREADY ADDED</h4>
+                {{/if}}
                 <tr class="table-row">
                   <td class="text-truncate participant-cell" title="{{member}}">{{member}}</td>
                   <td><span class="w-220px px-3 py-2">{{team}}</span></td>

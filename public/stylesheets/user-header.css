@@ -29,7 +29,6 @@
 .header-logo {
   height: 60px;
   width: auto;
-  border-radius: 15px; 
   flex-shrink: 0;
 }
 

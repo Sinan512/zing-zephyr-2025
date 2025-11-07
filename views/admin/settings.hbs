@@ -59,88 +59,7 @@
       </div>
     </div>
 
-    <!-- Add Program Form -->
-    <form
-      action="/admin/add-program"
-      method="POST"
-      class="col-12 col-md-10 col-lg-8 fade-in-up add-program-card"
-    >
-
-      <h3 class="form-title">Add New Program</h3>
-
-      <div class="input-group">
-        <label>Program Name</label>
-        <input
-          type="text"
-          name="programName"
-          placeholder="Enter program name..."
-          required
-        />
-      </div>
-
-      <div class="input-group">
-        <label>Zone</label>
-        <select name="zone" required>
-          <option value="" disabled selected>Select Zone</option>
-          <option value="Pre Zone">Pre Zone</option>
-          <option value="Mid Zone">Mid Zone</option>
-          <option value="High Zone">High Zone</option>
-          <option value="General">General</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Maximum Mark</label>
-        <select name="maxMark" required>
-          <option value="" disabled selected>Select Maximum Mark</option>
-          <option value="11">11</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Stage / Non-Stage</label>
-        <select name="stageType" required>
-          <option value="" disabled selected>Select Type</option>
-          <option value="Stage">Stage</option>
-          <option value="Non Stage">Non Stage</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Program Type</label>
-        <select name="programType" required>
-          <option value="" disabled selected>Select Program Type</option>
-          <option value="Individual">Individual</option>
-          <option value="Group">Group</option>
-        </select>
-      </div>
-
-      <button type="submit" class="add-btn" onclick="return alert('PRGRAM ADDED SUCCESSFULLY')">Add Program</button>
-    </form>
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        {{#if programs}}
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Programs</h3>
-        </div>
-        {{/if}}
-        <div class="list-group">
-          {{#each programs}}
-            <div class="list-item fade-item d-flex justify-content-between align-items-center text-uppercase">
-              <span>{{this.programName}}</span>
-              <form action="/admin/remove-program" method="POST" onclick="return confirm('Do You Want To Remove This Progam?')">
-                <input type="hidden" name="programName" value="{{this.programName}}" />
-                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
-              </form>
-            </div>
-          {{/each}}
-        </div>
-      </div>
-    </div>
-
+    
     <!-- ADMIN CREDENTIALS SECTION -->
     <div class="col-12 col-md-10 col-lg-8 fade-in-up">
       <div class="section-card">
@@ -196,7 +115,6 @@
               placeholder="pointer"
               required
               class="form-control"
-              value="pointer"
             />
           </div>
           <div class="input-group mb-3">
@@ -208,7 +126,6 @@
               placeholder="point@123"
               required
               class="form-control"
-              value="point@123"
             />
           </div>
           <button type="submit" class="btn-reset-credentials">
@@ -252,6 +169,79 @@
             <i class="bi bi-key-fill text-dark"></i> Reset Add-Code-Letter Credentials
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- Add Program Form -->
+    <form
+      action="/admin/add-program"
+      method="POST"
+      class="col-12 col-md-10 col-lg-8 fade-in-up add-program-card"
+    >
+
+      <h3 class="form-title">Add New Program</h3>
+
+      <div class="input-group">
+        <label>Program Name</label>
+        <input
+          type="text"
+          name="programName"
+          placeholder="Enter program name..."
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label>Zone</label>
+        <select name="zone" required>
+          <option value="" disabled selected>Select Zone</option>
+          <option value="Pre Zone">Pre Zone</option>
+          <option value="Mid Zone">Mid Zone</option>
+          <option value="High Zone">High Zone</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Maximum Mark</label>
+        <select name="maxMark" required>
+          <option value="" disabled selected>Select Maximum Mark</option>
+          <option value="11">11</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Program Type</label>
+        <select name="programType" required>
+          <option value="" disabled selected>Select Program Type</option>
+          <option value="Individual">Individual</option>
+          <option value="Group">Group</option>
+        </select>
+      </div>
+
+      <button type="submit" class="add-btn" onclick="return alert('PRGRAM ADDED SUCCESSFULLY')">Add Program</button>
+    </form>
+    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
+      <div class="section-card">
+        {{#if programs}}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title">Programs</h3>
+        </div>
+        {{/if}}
+        <div class="list-group">
+          {{#each programs}}
+            <div class="list-item fade-item d-flex justify-content-between align-items-center text-uppercase">
+              <span>{{this.programName}}</span><span class="text-info">{{this.zone}}</span>
+              <form action="/admin/remove-program" method="POST" onclick="return confirm('Do You Want To Remove This Progam?')">
+                <input type="hidden" name="programName" value="{{this.programName}} - {{this.zone}}" />
+                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+              </form>
+            </div>
+          {{/each}}
+        </div>
       </div>
     </div>
 

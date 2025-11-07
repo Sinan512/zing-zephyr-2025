@@ -83,6 +83,12 @@ module.exports = {
       { $set: { programName, zone, results } },
       { upsert: true }
     );
+    // 7️⃣.5 Save to pending
+    await db.collection(collections.PENDING_RESULTS).updateOne(
+      { programName, zone },
+      { $set: { programName, zone, results } },
+      { upsert: true }
+    );
 
    // 8️⃣ Update TEAM_POINTS totals (aggregated by team + program + zone)
 const teamTotals = {};

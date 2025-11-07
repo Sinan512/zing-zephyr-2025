@@ -279,7 +279,7 @@
 }
 
 .team-badge {
-  display: inline-block;
+  display: block;
   background: rgba(147, 67, 207, 0.836);
   color: #fefefe;
   padding: 6px 14px;

@@ -127,7 +127,8 @@ router.post("/reset-addcodeletter-credentials", requireAuth, async (req, res) =>
 
 
 router.post("/add-team", requireAuth, async (req, res) => {
-  var teamName = { ...req.body };
+  let teamName = { ...req.body };
+  teamName.teamName=teamName.teamName.toUpperCase();
   if (req.body) await programHelper.addTeams(teamName);
   res.redirect("back");
 });
@@ -155,8 +156,9 @@ router.post("/add-program", requireAuth, async (req, res) => {
 // Remove program
 router.post("/remove-program", requireAuth, async (req, res) => {
   try {
-    const { programName } = req.body;
-    const ok = await programHelper.removeProgram(programName);
+    const {programName} = req.body;
+    let [name,zone]=programName.split(" - ")
+    const ok = await programHelper.removeProgram(name,zone);
     if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('application/json') > -1)) {
       return res.json({ success: ok });
     }
@@ -304,7 +306,8 @@ router.get("/code-letter-add",requireAuth, async(req,res)=>{
       // Convert participant objects for Handlebars
       groupedCallList[prog.program] = prog.participants.map((p) => ({
         member: p.participant, // rename for template
-        team: p.team
+        team: p.team,
+        codes:p.codes
       }));
     });
   res.render("admin/code-letter-add",{admin:true, fName, programs ,groupedCallList});
@@ -424,13 +427,24 @@ router.get("/add-point-noLog/", requireAuth, async(req,res)=>{
   res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
 });
 
-router.post("/save-points", requireAddPointAuth, async(req,res)=>{
+router.post("/save-points", async(req,res)=>{
   try {
     await resultHelper.addPoint(req.body);
     res.redirect('/user/enter');
   } catch(error) {
     console.error("Error saving points:", error);
     res.redirect('/user/enter?error=Failed to save points');
+  }
+});
+
+//admin save point
+router.post("/save-points-admin", async(req,res)=>{
+  try {
+    await resultHelper.addPoint(req.body);
+    res.redirect('/admin/edit-result');
+  } catch(error) {
+    console.error("Error saving points:", error);
+    res.redirect('/admin/edit-result?error=Failed to save points');
   }
 });
 
