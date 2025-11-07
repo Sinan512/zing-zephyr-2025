@@ -71,9 +71,25 @@ router.get('/zone-toppers', async function(req, res, next) {
   const publishedZoneToppers = await resultHelper.getPublishedZoneToppers();
   console.log(publishedZoneToppers);
   
+  // Convert to array and sort by points (highest first)
+  let sortedZones = [];
+  if (publishedZoneToppers) {
+    const zones = [
+      { key: 'preZone', name: 'Pre Zone', data: publishedZoneToppers.preZone },
+      { key: 'midZone', name: 'Mid Zone', data: publishedZoneToppers.midZone },
+      { key: 'highZone', name: 'High Zone', data: publishedZoneToppers.highZone }
+    ];
+    
+    // Filter out null/undefined zones and sort by points (descending)
+    sortedZones = zones
+      .filter(zone => zone.data !== null && zone.data !== undefined)
+      .sort((a, b) => (b.data.points || 0) - (a.data.points || 0));
+  }
+  
   res.render('user/zone-toppers', { 
     fName, 
-    zoneToppers: publishedZoneToppers || {}
+    zoneToppers: publishedZoneToppers || {},
+    sortedZones: sortedZones
   });
 });
 

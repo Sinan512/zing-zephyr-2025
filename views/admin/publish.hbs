@@ -97,7 +97,9 @@
                   
                   <button 
                     class="btn btn-publish w-100 mt-3" 
-                    onclick="publishProgram('{{this.programName}}', '{{this.zone}}')"
+                    data-program-name="{{this.programName}}"
+                    data-zone="{{this.zone}}"
+                    onclick="publishProgram(this.getAttribute('data-program-name'), this.getAttribute('data-zone'))"
                   >
                     <i class="bi bi-upload"></i> Publish This
                   </button>

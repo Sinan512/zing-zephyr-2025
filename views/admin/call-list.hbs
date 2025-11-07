@@ -89,7 +89,9 @@
                   {{#each this}}
                   <tr>
                     <td class="rank-cell">{{inc @index}}</td>
-                    <td class="member-name">{{member}}</td>
+                    <td class="member-name">
+                      {{member}}{{#if (eq programType 'Group')}} & team{{/if}}
+                    </td>
                     <td>
                       <span class="team-badge">{{team}}</span>
                     </td>
@@ -160,6 +162,28 @@
 
   // Initialize all DataTables after render
   $(document).ready(function() {
+    // Restore selected program from sessionStorage
+    const savedProgram = sessionStorage.getItem('selectedProgram');
+    if (savedProgram) {
+      $('#programSelect').val(savedProgram);
+      // Trigger change to load members if team is also selected
+      const savedTeam = sessionStorage.getItem('selectedTeam');
+      if (savedTeam) {
+        $('#teamSelect').val(savedTeam);
+        $('#programSelect').trigger('change');
+      }
+    }
+
+    // Save selected program when changed
+    $('#programSelect').on('change', function() {
+      sessionStorage.setItem('selectedProgram', $(this).val());
+    });
+
+    // Save selected team when changed
+    $('#teamSelect').on('change', function() {
+      sessionStorage.setItem('selectedTeam', $(this).val());
+    });
+
     // Initialize DataTables for all tables but disable their search boxes
     $('table[id^="callListTable"]').DataTable({
       searching: false,
@@ -189,7 +213,11 @@
       if (!anyChecked) {
         e.preventDefault();
         alert('Please select at least one member.');
+        return;
       }
+      // Save form state before submission
+      sessionStorage.setItem('selectedProgram', $('#programSelect').val());
+      sessionStorage.setItem('selectedTeam', $('#teamSelect').val());
     });
   });
 </script>

@@ -1,264 +1,385 @@
 <link rel="stylesheet" href="/stylesheets/admin-settings.css" />
+<link rel="stylesheet" href="/stylesheets/publish.css">
 
-<section class="fest-section container py-5">
+<div class="container-fluid py-4 publish-container">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <!-- FEST TITLE SECTION -->
+      <div class="text-center mb-4 fade-in-up">
+        <h1
+          class="fest-title text-decoration-none"
+          id="festTitle"
+          contenteditable="true"
+          style="color: #ffffff; font-size: 2.5rem; margin-bottom: 10px;"
+        >{{fName}}</h1>
+        <p class="fest-subtitle" style="color: rgba(255, 255, 255, 0.8);">Click the title to edit the Fest name</p>
+      </div>
 
-  <!-- FEST TITLE SECTION -->
-  <div class="text-center mb-4 fade-in-up">
-    <h1
-      class="fest-title text-decoration-none"
-      id="festTitle"
-      contenteditable="true"
-    >{{fName}}</h1>
-    <p class="fest-subtitle">Click the title to edit the Fest name</p>
-  </div>
+      <h2 class="text-center mb-4">Settings</h2>
 
-  <div class="row justify-content-center g-4">
-
-    <!-- TEAMS SECTION (TOP) -->
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Teams</h3>
+      <!-- Top Action Buttons -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+          <button 
+            class="btn btn-action w-100 {{#if (eq currentView 'teams')}}btn-active{{else}}btn-secondary-action{{/if}}" 
+            onclick="showTeams()"
+          >
+            <i class="bi bi-people"></i> Teams
+          </button>
         </div>
-
-        <!-- Add Team Input -->
-        <form
-          action="/admin/add-team"
-          method="POST"
-          class="d-flex mb-3 add-team-box"
-        >
-          <input
-            type="text"
-            name="teamName"
-            class="form-control"
-            placeholder="Enter new team name..."
-            required
-          />
-          <input
-            type="color"
-            name="teamColor"
-            class="form-control form-control-color"
-            value="#3498db"
-            title="Choose team color"
-            style="width: 60px; height: 38px; cursor: pointer;"
-          />
-          <button type="submit" class="btn add-team-btn">Add</button>
-        </form>
-
-        <div class="list-group">
-          {{#each teams}}
-            <div class="list-item fade-item d-flex justify-content-between align-items-center">
-              <span>{{this.teamName}}</span>
-              <form action="/admin/remove-team" method="POST" onclick="return confirm('Do You Want To Remove This Team?')">
-                <input type="hidden" name="teamName" value="{{this.teamName}}" />
-                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
-              </form>
-            </div>
-          {{/each}}
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+          <button 
+            class="btn btn-action w-100 {{#if (eq currentView 'programs')}}btn-active{{else}}btn-secondary-action{{/if}}" 
+            onclick="showPrograms()"
+          >
+            <i class="bi bi-list-ul"></i> Programs
+          </button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+          <button 
+            class="btn btn-action w-100 {{#if (eq currentView 'credentials')}}btn-active{{else}}btn-secondary-action{{/if}}" 
+            onclick="showCredentials()"
+          >
+            <i class="bi bi-key"></i> Credentials
+          </button>
         </div>
       </div>
-    </div>
 
-    
-    <!-- ADMIN CREDENTIALS SECTION -->
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Admin Credentials</h3>
-        </div>
+      <!-- Teams Section -->
+      <div id="teamsSection" class="results-section {{#unless (eq currentView 'teams')}}{{#if currentView}}d-none{{/if}}{{/unless}}">
+        <h3 class="section-title mb-4">Teams</h3>
         
-        <form action="/admin/reset-credentials" method="POST" class="admin-credentials-form">
-          <div class="input-group mb-3">
-            <label for="newUsername">New Username</label>
-            <input
-              type="text"
-              id="newUsername"
-              name="username"
-              placeholder="Enter new username..."
-              required
-              class="form-control"
-            />
-          </div>
-          
-          <div class="input-group mb-3">
-            <label for="newPassword">New Password</label>
-            <input
-              type="password"
-              id="newPassword"
-              name="password"
-              placeholder="Enter new password..."
-              required
-              class="form-control"
-            />
-          </div>
-          
-          <button type="submit" class="btn-reset-credentials">
-            <i class="bi bi-key-fill text-dark"></i> Reset Credentials
-          </button>
-        </form>
-      </div>
-    </div>
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="section-card" style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px);">
+              <!-- Add Team Input -->
+              <form
+                action="/admin/add-team"
+                method="POST"
+                class="d-flex mb-3 add-team-box"
+              >
+                <input
+                  type="text"
+                  name="teamName"
+                  class="form-control"
+                  placeholder="Enter new team name..."
+                  required
+                  style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                />
+                <input
+                  type="color"
+                  name="teamColor"
+                  class="form-control form-control-color"
+                  value="#3498db"
+                  title="Choose team color"
+                  style="width: 60px; height: 38px; cursor: pointer;"
+                />
+                <button type="submit" class="btn add-team-btn" style="background: rgba(181, 127, 255, 0.4); border: 1px solid #b57fff; color: #ffffff;">Add</button>
+              </form>
 
-    <!-- ADD-POINT CREDENTIALS SECTION -->
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Add-Point Credentials</h3>
+              <div class="list-group">
+                {{#each teams}}
+                  <div class="list-item fade-item d-flex justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.1); padding: 12px; margin-bottom: 8px; border-radius: 8px; color: #ffffff;">
+                    <span>{{this.teamName}}</span>
+                    <form action="/admin/remove-team" method="POST" onclick="return confirm('Do You Want To Remove This Team?')">
+                      <input type="hidden" name="teamName" value="{{this.teamName}}" />
+                      <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+                    </form>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          </div>
         </div>
-        <form action="/admin/reset-addpoint-credentials" method="POST" class="admin-credentials-form">
-          <div class="input-group mb-3">
-            <label for="apUsername">Username</label>
-            <input
-              type="text"
-              id="apUsername"
-              name="username"
-              placeholder="pointer"
-              required
-              class="form-control"
-            />
-          </div>
-          <div class="input-group mb-3">
-            <label for="apPassword">Password</label>
-            <input
-              type="text"
-              id="apPassword"
-              name="password"
-              placeholder="point@123"
-              required
-              class="form-control"
-            />
-          </div>
-          <button type="submit" class="btn-reset-credentials">
-            <i class="bi bi-key-fill text-dark"></i> Reset Add-Point Credentials
-          </button>
-        </form>
       </div>
-    </div>
 
-    
-    <!-- ADD-CODE-LETTER CREDENTIALS SECTION -->
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Add-Code Letter Credentials</h3>
+      <!-- Programs Section -->
+      <div id="programsSection" class="results-section {{#unless (eq currentView 'programs')}}d-none{{/unless}}">
+        <h3 class="section-title mb-4">Programs</h3>
+        
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <!-- Add Program Form -->
+            <form
+              action="/admin/add-program"
+              method="POST"
+              class="add-program-card"
+              style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px); margin-bottom: 20px;"
+            >
+              <h3 class="form-title" style="color: #b57fff; margin-bottom: 20px;">Add New Program</h3>
+
+              <div class="form-field-group mb-3">
+                <label style="color: #ffffff; display: block; margin-bottom: 5px; font-weight: 500;">Program Name</label>
+                <input
+                  type="text"
+                  name="programName"
+                  placeholder="Enter program name..."
+                  required
+                  class="form-control"
+                  style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; width: 100%; padding: 10px; border-radius: 8px;"
+                />
+              </div>
+
+              <div class="form-field-group mb-3">
+                <label style="color: #ffffff; display: block; margin-bottom: 5px; font-weight: 500;">Zone</label>
+                <select name="zone" required class="form-control" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; width: 100%; padding: 10px; border-radius: 8px;">
+                  <option value="" disabled selected style="color: #333;">Select Zone</option>
+                  <option value="Pre Zone" style="color: #333;">Pre Zone</option>
+                  <option value="Mid Zone" style="color: #333;">Mid Zone</option>
+                  <option value="High Zone" style="color: #333;">High Zone</option>
+                  <option value="General" style="color: #333;">General</option>
+                </select>
+              </div>
+
+              <div class="form-field-group mb-3">
+                <label style="color: #ffffff; display: block; margin-bottom: 5px; font-weight: 500;">Maximum Mark</label>
+                <select name="maxMark" required class="form-control" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; width: 100%; padding: 10px; border-radius: 8px;">
+                  <option value="" disabled selected style="color: #333;">Select Maximum Mark</option>
+                  <option value="11" style="color: #333;">11</option>
+                  <option value="15" style="color: #333;">15</option>
+                  <option value="20" style="color: #333;">20</option>
+                  <option value="25" style="color: #333;">25</option>
+                </select>
+              </div>
+
+              <div class="form-field-group mb-3">
+                <label style="color: #ffffff; display: block; margin-bottom: 5px; font-weight: 500;">Program Type</label>
+                <select name="programType" required class="form-control" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; width: 100%; padding: 10px; border-radius: 8px;">
+                  <option value="" disabled selected style="color: #333;">Select Program Type</option>
+                  <option value="Individual" style="color: #333;">Individual</option>
+                  <option value="Group" style="color: #333;">Group</option>
+                </select>
+              </div>
+
+              <button type="submit" class="add-btn" onclick="return alert('PROGRAM ADDED SUCCESSFULLY')" style="background: linear-gradient(45deg, #9e57e8, #4b1b8b); border: none; color: #ffffff; padding: 12px; border-radius: 10px; width: 100%;">Add Program</button>
+            </form>
+
+            <div class="section-card" style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px);">
+              {{#if programs}}
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title" style="color: #b57fff; font-size: 1.5rem; margin: 0;">Programs List</h3>
+              </div>
+              {{/if}}
+              <div class="list-group">
+                {{#each programs}}
+                  <div class="list-item fade-item d-flex justify-content-between align-items-center text-uppercase" style="background: rgba(255, 255, 255, 0.1); padding: 12px; margin-bottom: 8px; border-radius: 8px; color: #ffffff;">
+                    <span>{{this.programName}}</span><span class="text-info" style="color: #b57fff;">{{this.zone}}</span>
+                    <form action="/admin/remove-program" method="POST" onclick="return confirm('Do You Want To Remove This Program?')">
+                      <input type="hidden" name="programName" value="{{this.programName}} - {{this.zone}}" />
+                      <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+                    </form>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          </div>
         </div>
-        <form action="/admin/reset-addcodeletter-credentials" method="POST" class="admin-credentials-form">
-          <div class="input-group mb-3">
-            <label for="apUsername">Username</label>
-            <input
-              type="text"
-              id="apUsername"
-              name="username"
-              placeholder="code letter user name"
-              required
-              class="form-control"
-            />
-          </div>
-          <div class="input-group mb-3">
-            <label for="apPassword">Password</label>
-            <input
-              type="text"
-              id="apPassword"
-              name="password"
-              placeholder="password"
-              required
-              class="form-control"
-            />
-          </div>
-          <button type="submit" class="btn-reset-credentials">
-            <i class="bi bi-key-fill text-dark"></i> Reset Add-Code-Letter Credentials
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Add Program Form -->
-    <form
-      action="/admin/add-program"
-      method="POST"
-      class="col-12 col-md-10 col-lg-8 fade-in-up add-program-card"
-    >
-
-      <h3 class="form-title">Add New Program</h3>
-
-      <div class="input-group">
-        <label>Program Name</label>
-        <input
-          type="text"
-          name="programName"
-          placeholder="Enter program name..."
-          required
-        />
       </div>
 
-      <div class="input-group">
-        <label>Zone</label>
-        <select name="zone" required>
-          <option value="" disabled selected>Select Zone</option>
-          <option value="Pre Zone">Pre Zone</option>
-          <option value="Mid Zone">Mid Zone</option>
-          <option value="High Zone">High Zone</option>
-          <option value="General">General</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Maximum Mark</label>
-        <select name="maxMark" required>
-          <option value="" disabled selected>Select Maximum Mark</option>
-          <option value="11">11</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Program Type</label>
-        <select name="programType" required>
-          <option value="" disabled selected>Select Program Type</option>
-          <option value="Individual">Individual</option>
-          <option value="Group">Group</option>
-        </select>
-      </div>
-
-      <button type="submit" class="add-btn" onclick="return alert('PRGRAM ADDED SUCCESSFULLY')">Add Program</button>
-    </form>
-    <div class="col-12 col-md-10 col-lg-8 fade-in-up">
-      <div class="section-card">
-        {{#if programs}}
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="section-title">Programs</h3>
-        </div>
-        {{/if}}
-        <div class="list-group">
-          {{#each programs}}
-            <div class="list-item fade-item d-flex justify-content-between align-items-center text-uppercase">
-              <span>{{this.programName}}</span><span class="text-info">{{this.zone}}</span>
-              <form action="/admin/remove-program" method="POST" onclick="return confirm('Do You Want To Remove This Progam?')">
-                <input type="hidden" name="programName" value="{{this.programName}} - {{this.zone}}" />
-                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+      <!-- Credentials Section -->
+      <div id="credentialsSection" class="results-section {{#unless (eq currentView 'credentials')}}d-none{{/unless}}">
+        <h3 class="section-title mb-4">Credentials</h3>
+        
+        <div class="row justify-content-center g-4">
+          <!-- ADMIN CREDENTIALS SECTION -->
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="section-card" style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px);">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title" style="color: #b57fff; font-size: 1.5rem; margin: 0;">Admin Credentials</h3>
+              </div>
+              
+              <form action="/admin/reset-credentials" method="POST" class="admin-credentials-form">
+                <div class="input-group mb-3">
+                  <label for="newUsername" style="color: #ffffff; display: block; margin-bottom: 5px;">New Username</label>
+                  <input
+                    type="text"
+                    id="newUsername"
+                    name="username"
+                    placeholder="Enter new username..."
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                
+                <div class="input-group mb-3">
+                  <label for="newPassword" style="color: #ffffff; display: block; margin-bottom: 5px;">New Password</label>
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="password"
+                    placeholder="Enter new password..."
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                
+                <button type="submit" class="btn-reset-credentials" style="background: linear-gradient(45deg, #9e57e8, #4b1b8b); border: none; color: #ffffff; padding: 12px; border-radius: 10px; width: 100%;">
+                  <i class="bi bi-key-fill"></i> Reset Credentials
+                </button>
               </form>
             </div>
-          {{/each}}
+          </div>
+
+          <!-- ADD-POINT CREDENTIALS SECTION -->
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="section-card" style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px);">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title" style="color: #b57fff; font-size: 1.5rem; margin: 0;">Add-Point Credentials</h3>
+              </div>
+              <form action="/admin/reset-addpoint-credentials" method="POST" class="admin-credentials-form">
+                <div class="input-group mb-3">
+                  <label for="apUsername1" style="color: #ffffff; display: block; margin-bottom: 5px;">Username</label>
+                  <input
+                    type="text"
+                    id="apUsername1"
+                    name="username"
+                    placeholder="pointer"
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <label for="apPassword1" style="color: #ffffff; display: block; margin-bottom: 5px;">Password</label>
+                  <input
+                    type="text"
+                    id="apPassword1"
+                    name="password"
+                    placeholder="point@123"
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                <button type="submit" class="btn-reset-credentials" style="background: linear-gradient(45deg, #9e57e8, #4b1b8b); border: none; color: #ffffff; padding: 12px; border-radius: 10px; width: 100%;">
+                  <i class="bi bi-key-fill"></i> Reset Add-Point Credentials
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ADD-CODE-LETTER CREDENTIALS SECTION -->
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="section-card" style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; backdrop-filter: blur(15px);">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title" style="color: #b57fff; font-size: 1.5rem; margin: 0;">Add-Code Letter Credentials</h3>
+              </div>
+              <form action="/admin/reset-addcodeletter-credentials" method="POST" class="admin-credentials-form">
+                <div class="input-group mb-3">
+                  <label for="apUsername2" style="color: #ffffff; display: block; margin-bottom: 5px;">Username</label>
+                  <input
+                    type="text"
+                    id="apUsername2"
+                    name="username"
+                    placeholder="code letter user name"
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <label for="apPassword2" style="color: #ffffff; display: block; margin-bottom: 5px;">Password</label>
+                  <input
+                    type="text"
+                    id="apPassword2"
+                    name="password"
+                    placeholder="password"
+                    required
+                    class="form-control"
+                    style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;"
+                  />
+                </div>
+                <button type="submit" class="btn-reset-credentials" style="background: linear-gradient(45deg, #9e57e8, #4b1b8b); border: none; color: #ffffff; padding: 12px; border-radius: 10px; width: 100%;">
+                  <i class="bi bi-key-fill"></i> Reset Add-Code-Letter Credentials
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
-
-</section>
+</div>
 
 <script>
-  // Enter key update fest name const festTitle =
-  document.getElementById("festTitle"); festTitle.addEventListener("keydown",
-  (e) => { if (e.key === "Enter") { e.preventDefault(); const newTitle =
-  festTitle.innerText.trim(); fetch("/admin/update-fest-name", { method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" }, body:
-  `festName=${encodeURIComponent(newTitle)}` }).catch(err =>
-  console.error("Error sending data:", err)); } }); // Fade-in animation const
-  observer = new IntersectionObserver(entries => { entries.forEach(entry => { if
-  (entry.isIntersecting) entry.target.classList.add("in-view"); }); });
+  // Enter key update fest name
+  const festTitle = document.getElementById("festTitle");
+  festTitle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const newTitle = festTitle.innerText.trim();
+      fetch("/admin/update-fest-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `festName=${encodeURIComponent(newTitle)}`
+      }).catch(err => console.error("Error sending data:", err));
+    }
+  });
+
+  // Navigation functions
+  function showTeams() {
+    document.getElementById('programsSection').classList.add('d-none');
+    document.getElementById('credentialsSection').classList.add('d-none');
+    document.getElementById('teamsSection').classList.remove('d-none');
+    window.history.pushState({}, '', '/admin/settings?view=teams');
+    updateButtonStates('teams');
+  }
+
+  function showPrograms() {
+    document.getElementById('teamsSection').classList.add('d-none');
+    document.getElementById('credentialsSection').classList.add('d-none');
+    document.getElementById('programsSection').classList.remove('d-none');
+    window.history.pushState({}, '', '/admin/settings?view=programs');
+    updateButtonStates('programs');
+  }
+
+  function showCredentials() {
+    document.getElementById('teamsSection').classList.add('d-none');
+    document.getElementById('programsSection').classList.add('d-none');
+    document.getElementById('credentialsSection').classList.remove('d-none');
+    window.history.pushState({}, '', '/admin/settings?view=credentials');
+    updateButtonStates('credentials');
+  }
+
+  function updateButtonStates(activeView) {
+    const buttons = document.querySelectorAll('.btn-action');
+    buttons.forEach(btn => {
+      btn.classList.remove('btn-active');
+      btn.classList.add('btn-secondary-action');
+    });
+    // Find and activate the correct button
+    if (activeView === 'teams') {
+      buttons[0].classList.remove('btn-secondary-action');
+      buttons[0].classList.add('btn-active');
+    } else if (activeView === 'programs') {
+      buttons[1].classList.remove('btn-secondary-action');
+      buttons[1].classList.add('btn-active');
+    } else if (activeView === 'credentials') {
+      buttons[2].classList.remove('btn-secondary-action');
+      buttons[2].classList.add('btn-active');
+    }
+  }
+
+  // Initialize view based on URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const view = urlParams.get('view') || 'teams';
+  if (view === 'programs') {
+    showPrograms();
+  } else if (view === 'credentials') {
+    showCredentials();
+  } else {
+    showTeams();
+  }
+
+  // Fade-in animation
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add("in-view");
+    });
+  });
   document.querySelectorAll(".fade-in-up, .fade-item").forEach(el =>
-  observer.observe(el));
+    observer.observe(el)
+  );
 </script>

@@ -181,6 +181,8 @@ $(document).ready(function() {
             icon: "success",
             timer: 2000,
             showConfirmButton: false
+          }).then(() => {
+            location.reload();
           });
         } else {
           Swal.fire("❌ Error!", (res && res.message) || "Server error. Try again.", "error");

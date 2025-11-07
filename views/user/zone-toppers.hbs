@@ -5,10 +5,53 @@
     <div class="row justify-content-center">
       <div class="col-12">
         <h2 class="page-title text-center mb-4 text-uppercase">
-          <i class="bi bi-star-fill"></i> Individual score
+         Individual score
         </h2>
 
-        {{#if zoneToppers}}
+        {{#if sortedZones}}
+          {{#each sortedZones}}
+          <div class="zone-section mb-5">
+            <h3 class="section-title text-center mb-4">
+              <i class="bi bi-star-fill"></i> {{this.name}}
+            </h3>
+            <div class="teams-leaderboard row justify-content-center">
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="zone-topper-card masterpiece-card">
+                  <div class="masterpiece-header">
+                    <div class="crown-icon">
+                      <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3 class="zone-topper-name text-uppercase">{{this.data.member}}</h3>
+                    <p class="zone-topper-team">{{this.data.team}}</p>
+                  </div>
+                  <div class="masterpiece-body">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                          <i class="bi bi-star-fill"></i>
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Total Marks</span>
+                          <span class="stat-value">{{this.data.points}}</span>
+                        </div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                          <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Programs</span>
+                          <span class="stat-value">{{this.data.programCount}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {{/each}}
+        {{else if zoneToppers}}
           
           <!-- Pre Zone Topper -->
           {{#if zoneToppers.preZone}}
@@ -17,19 +60,34 @@
               <i class="bi bi-star-fill"></i> Pre Zone 
             </h3>
             <div class="teams-leaderboard row justify-content-center">
-              <div class="col-12 col-md-6 col-lg-4">
-                <div class="team-status-card rank-first">
-                  <div class="rank-badge-large">🟡</div>
-                  <div class="team-info-content text-center">
-                    <h3 class="team-status-name">{{zoneToppers.preZone.member}}</h3>
-                    <p class="topper-team-name">{{zoneToppers.preZone.team}}</p>
-                    <div class="points-section">
-                      <span class="points-label">Total Marks</span>
-                      <span class="points-value-large">{{zoneToppers.preZone.points}}</span>
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="zone-topper-card masterpiece-card">
+                  <div class="masterpiece-header">
+                    <div class="crown-icon">
+                      <i class="bi bi-trophy-fill"></i>
                     </div>
-                    <div class="programs-section mt-2">
-                      <span class="points-label">Programs</span>
-                      <span class="points-value-large">{{zoneToppers.preZone.programCount}}</span>
+                    <h3 class="zone-topper-name text-uppercase">{{zoneToppers.preZone.member}}</h3>
+                    <p class="zone-topper-team">{{zoneToppers.preZone.team}}</p>
+                  </div>
+                  <div class="masterpiece-body">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Total Marks</span>
+                          <span class="stat-value">{{zoneToppers.preZone.points}}</span>
+                        </div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                          <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Programs</span>
+                          <span class="stat-value">{{zoneToppers.preZone.programCount}}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -45,19 +103,34 @@
               <i class="bi bi-star-fill"></i> Mid Zone 
             </h3>
             <div class="teams-leaderboard row justify-content-center">
-              <div class="col-12 col-md-6 col-lg-4">
-                <div class="team-status-card rank-first">
-                  <div class="rank-badge-large">🟡</div>
-                  <div class="team-info-content text-center">
-                    <h3 class="team-status-name">{{zoneToppers.midZone.member}}</h3>
-                    <p class="topper-team-name">{{zoneToppers.midZone.team}}</p>
-                    <div class="points-section">
-                      <span class="points-label">Total Marks</span>
-                      <span class="points-value-large">{{zoneToppers.midZone.points}}</span>
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="zone-topper-card masterpiece-card">
+                  <div class="masterpiece-header">
+                    <div class="crown-icon">
+                      <i class="bi bi-trophy"></i>
                     </div>
-                    <div class="programs-section mt-2">
-                      <span class="points-label">Programs</span>
-                      <span class="points-value-large">{{zoneToppers.midZone.programCount}}</span>
+                    <h3 class="zone-topper-name text-uppercase">{{zoneToppers.midZone.member}}</h3>
+                    <p class="zone-topper-team">{{zoneToppers.midZone.team}}</p>
+                  </div>
+                  <div class="masterpiece-body">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Total Marks</span>
+                          <span class="stat-value">{{zoneToppers.midZone.points}}</span>
+                        </div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                          <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Programs</span>
+                          <span class="stat-value">{{zoneToppers.midZone.programCount}}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -73,19 +146,34 @@
               <i class="bi bi-star-fill"></i> High Zone
             </h3>
             <div class="teams-leaderboard row justify-content-center">
-              <div class="col-12 col-md-6 col-lg-4">
-                <div class="team-status-card rank-first">
-                  <div class="rank-badge-large">🟡</div>
-                  <div class="team-info-content text-center">
-                    <h3 class="team-status-name">{{zoneToppers.highZone.member}}</h3>
-                    <p class="topper-team-name">{{zoneToppers.highZone.team}}</p>
-                    <div class="points-section">
-                      <span class="points-label">Total Marks</span>
-                      <span class="points-value-large">{{zoneToppers.highZone.points}}</span>
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="zone-topper-card masterpiece-card">
+                  <div class="masterpiece-header">
+                    <div class="crown-icon">
+                      <i class="bi bi-trophy"></i>
                     </div>
-                    <div class="programs-section mt-2">
-                      <span class="points-label">Programs</span>
-                      <span class="points-value-large">{{zoneToppers.highZone.programCount}}</span>
+                    <h3 class="zone-topper-name text-uppercase">{{zoneToppers.highZone.member}}</h3>
+                    <p class="zone-topper-team">{{zoneToppers.highZone.team}}</p>
+                  </div>
+                  <div class="masterpiece-body">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Total Marks</span>
+                          <span class="stat-value">{{zoneToppers.highZone.points}}</span>
+                        </div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-icon">
+                          <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                          <span class="stat-label">Programs</span>
+                          <span class="stat-value">{{zoneToppers.highZone.programCount}}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

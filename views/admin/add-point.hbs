@@ -42,32 +42,141 @@
             {{/each}}
           </ul>
         </div>
-        <button type="submit" class="btn-submit" onclick="return confirm('SUBMIT POINTS ?')" >Submit Points</button>
-        <!-- Success Message -->
-        <div id="successMessage" class="success-message">
-          <i class="fa-solid fa-check-circle"></i>
-          Points Added Successfully!
-        </div>
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Points</button>
       </form>
     </div>
   </div>
 </div>
 
 <script>
-document.querySelector(".btn-submit").addEventListener("click", function (e) {
-  e.preventDefault(); // stop default just to show message before submit
-
-  const msg = document.getElementById("successMessage");
+document.getElementById("submitBtn").addEventListener("click", function (e) {
+  e.preventDefault();
   const form = this.closest("form");
+  const programName = form.querySelector('input[name="programName"]').value;
+  const zone = form.querySelector('input[name="zone"]').value;
 
-  // Show success animation
-  msg.style.display = "block";
-  msg.style.animation = "glowIn 0.6s ease";
+  // Styled confirmation using SweetAlert
+  Swal.fire({
+    title: 'Submit Points?',
+    html: `<div style="text-align: center;">
+             <p style="font-size: 1.1rem; margin-bottom: 10px;">Are you sure you want to submit points for:</p>
+             <p style="font-size: 1.3rem; font-weight: bold; color: #ffd700; margin: 10px 0;">
+               <strong>${programName}</strong>
+             </p>
+             <p style="font-size: 1rem; color: #b57fff;">
+               ${zone}
+             </p>
+           </div>`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '<i class="bi bi-check-circle"></i> Yes, Submit!',
+    cancelButtonText: '<i class="bi bi-x-circle"></i> Cancel',
+    customClass: {
+      popup: 'swal-custom-popup',
+      confirmButton: 'swal-custom-confirm',
+      cancelButton: 'swal-custom-cancel'
+    },
+    buttonsStyling: true,
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Show loading state
+      Swal.fire({
+        title: 'Submitting...',
+        html: 'Please wait while we process your points.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      
+      // Submit the form
+      form.submit();
+    }
+  });
+});
 
-  // Wait briefly for animation, then submit form to router
-  setTimeout(() => {
-    form.submit(); // ✅ actually sends the form data to Express route
-  }, 800); // slight delay for visual feedback
+// Check for success/error messages from URL parameters
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const success = urlParams.get('success');
+  const error = urlParams.get('error');
+  
+  if (success) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      html: `<div style="text-align: center;">
+               <p style="font-size: 1.2rem; margin-bottom: 15px;">Points have been submitted successfully!</p>
+               <p style="font-size: 1rem; color: #b57fff;">Your points have been saved and processed.</p>
+             </div>`,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#3085d6',
+      timer: 5000,
+      timerProgressBar: true
+    });
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      html: `<div style="text-align: center;">
+               <p style="font-size: 1.2rem; margin-bottom: 15px;">Failed to submit points</p>
+               <p style="font-size: 1rem; color: #d33;">${error}</p>
+             </div>`,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#d33'
+    });
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 });
 </script>
+
+<style>
+.swal-custom-popup {
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(148, 13, 174, 0.95), rgba(30, 26, 84, 0.95));
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(181, 127, 255, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.swal-custom-confirm {
+  background: linear-gradient(135deg, #3085d6, #1e6bb8) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 12px 30px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 5px 15px rgba(48, 133, 214, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal-custom-confirm:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(48, 133, 214, 0.6) !important;
+}
+
+.swal-custom-cancel {
+  background: linear-gradient(135deg, #d33, #b02a37) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 12px 30px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 5px 15px rgba(211, 51, 51, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal-custom-cancel:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(211, 51, 51, 0.6) !important;
+}
+</style>
 

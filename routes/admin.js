@@ -86,7 +86,8 @@ router.get("/settings", requireAuth, async (req, res) => {
   var programs = await programHelper.viewPrograms();
   const success = req.query.success || null;
   const error = req.query.error || null;
-  res.render("admin/settings", { admin: true, fName, teams, programs, success, error });
+  const currentView = req.query.view || 'teams';
+  res.render("admin/settings", { admin: true, fName, teams, programs, success, error, currentView });
 });
 
 router.post("/update-fest-name", requireAuth, async (req, res) => {
@@ -224,14 +225,24 @@ router.get("/call-list", requireAuth, async (req, res) => {
   var programs = await programHelper.viewPrograms();
   let callListData = await callListHelper.viewCallList();
     let groupedCallList = {};
+    // Create a map of program types: "ProgramName - Zone" -> programType
+    const programTypeMap = {};
+    programs.forEach((p) => {
+      const key = `${p.programName} - ${p.zone}`;
+      programTypeMap[key] = p.programType;
+    });
+    
     callListData.forEach((prog) => {
+      // Get program type for this program
+      const programType = programTypeMap[prog.program] || null;
       // Convert participant objects for Handlebars
       groupedCallList[prog.program] = prog.participants.map((p) => ({
         member: p.participant, // rename for template
-        team: p.team
+        team: p.team,
+        programType: programType // Add program type to each participant
       }));
     });
-  res.render("admin/call-list", { admin: true,codeLetter:true, fName, teams, programs ,groupedCallList});
+  res.render("admin/call-list", { admin: true,codeLetter:true, fName, teams, programs ,groupedCallList, programTypeMap});
 });
 
 router.get("/get-members/:teamName/:zone", async (req, res) => {
@@ -270,11 +281,21 @@ if (!Array.isArray(members)) {
   var programs = await programHelper.viewPrograms();
    let callListData = await callListHelper.viewCallList();
     let groupedCallList = {};
+    // Create a map of program types: "ProgramName - Zone" -> programType
+    const programTypeMap = {};
+    programs.forEach((p) => {
+      const key = `${p.programName} - ${p.zone}`;
+      programTypeMap[key] = p.programType;
+    });
+    
     callListData.forEach((prog) => {
+      // Get program type for this program
+      const programType = programTypeMap[prog.program] || null;
       // Convert participant objects for Handlebars
       groupedCallList[prog.program] = prog.participants.map((p) => ({
         member: p.participant, // rename for template
-        team: p.team
+        team: p.team,
+        programType: programType // Add program type to each participant
       }));
     });
     
@@ -422,7 +443,7 @@ router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   const programData = `${programName} - ${zone}`; // matches the DB key format
   var codeLetters=await callListHelper.getCodeLetter(programData);
   codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
-  res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone, hideAdminNav: true});
+  res.render("admin/add-point",{fName,programName,codeLetters, zone, hideAdminNav: true});
 });// pending to set
 //add point without login 
 
@@ -439,10 +460,14 @@ router.get("/add-point-noLog/", requireAuth, async(req,res)=>{
 router.post("/save-points", async(req,res)=>{
   try {
     await resultHelper.addPoint(req.body);
-    res.redirect('/user/enter');
+    const { programName, zone } = req.body;
+    const redirectUrl = `/admin/add-point/?programName=${encodeURIComponent(programName)}&zone=${encodeURIComponent(zone)}&success=true`;
+    res.redirect(redirectUrl);
   } catch(error) {
     console.error("Error saving points:", error);
-    res.redirect('/user/enter?error=Failed to save points');
+    const { programName, zone } = req.body;
+    const redirectUrl = `/admin/add-point/?programName=${encodeURIComponent(programName)}&zone=${encodeURIComponent(zone)}&error=${encodeURIComponent('Failed to save points')}`;
+    res.redirect(redirectUrl);
   }
 });
 
@@ -450,10 +475,14 @@ router.post("/save-points", async(req,res)=>{
 router.post("/save-points-admin", async(req,res)=>{
   try {
     await resultHelper.addPoint(req.body);
-    res.redirect('/admin/edit-result');
+    const { programName, zone } = req.body;
+    const redirectUrl = `/admin/add-point-noLog/?programName=${encodeURIComponent(programName)}&zone=${encodeURIComponent(zone)}&success=true`;
+    res.redirect(redirectUrl);
   } catch(error) {
     console.error("Error saving points:", error);
-    res.redirect('/admin/edit-result?error=Failed to save points');
+    const { programName, zone } = req.body;
+    const redirectUrl = `/admin/add-point-noLog/?programName=${encodeURIComponent(programName)}&zone=${encodeURIComponent(zone)}&error=${encodeURIComponent('Failed to save points')}`;
+    res.redirect(redirectUrl);
   }
 });
 
