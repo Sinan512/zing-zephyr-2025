@@ -58,8 +58,6 @@ module.exports={
     removeProgram:async(name,zone)=>{
         var db=await connectDB();
         var res = await db.collection(collections.PROGRAMS).deleteOne({ programName:name });
-        await db.collection(collections.PUBLISHED).deleteOne({ programName:name });
-        await db.collection(collections.PENDING_RESULTS).deleteOne({ programName:name });
         var programKey = `${name} - ${zone}`;
         await db.collection(collections.CALL_LISTS).deleteOne({  program: programKey  });
         return res.deletedCount > 0;

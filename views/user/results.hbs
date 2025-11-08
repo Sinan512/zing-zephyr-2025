@@ -16,7 +16,7 @@
               type="text" 
               id="globalSearchInput" 
               class="program-search-input" 
-              placeholder="🔍 Search by Program Name or Member Name..." 
+              placeholder="Search by Program Name or Member Name..." 
               autocomplete="off"
             />
             <button class="clear-search-btn" id="clearGlobalSearchBtn" style="display: none;" onclick="clearGlobalSearch()">
@@ -32,11 +32,11 @@
         {{#if publishedResults}}
           <div class="row g-4" id="resultsGrid">
             {{#each publishedResults}}
-            <div class="col-12 col-md-6 col-lg-4 result-item" data-program="{{this.programName}}">
+            <div class="col-12 col-md-6 col-lg-4 result-item text-uppercase" data-program="{{this.programName}}">
               <div class="result-card">
                 <div class="publish-order-badge">#{{this.publishOrder}}</div>
                 <div class="card-header">
-                  <h3 class="program-title">{{this.programName}}</h3>
+                  <h3 class="program-title text-uppercase">{{this.programName}}</h3>
                   <span class="zone-badge">{{this.zone}}</span>
                 </div>
                 <div class="card-body">

@@ -16,12 +16,21 @@
               <label class="form-label">
                 <i class="bi bi-calendar-event"></i> Program (Zone Wise)
               </label>
-              <select name="program" id="programSelect" class="modern-select form-select" required>
-                <option value="">Select Program & Zone</option>
-                {{#each programs}}
-                <option value="{{this.programName}} - {{this.zone}}">{{this.programName}} - {{this.zone}}</option>
-                {{/each}}
-              </select>
+              <div class="program-search-wrapper position-relative">
+                <input 
+                  type="text" 
+                  id="programSearchInput" 
+                  class="form-control program-search-input mb-2" 
+                  placeholder="🔍 Search Program or Zone..." 
+                  autocomplete="off"
+                />
+                <select name="program" id="programSelect" class="modern-select form-select" required>
+                  <option value="">Select Program & Zone</option>
+                  {{#each programs}}
+                  <option value="{{this.programName}} - {{this.zone}}" data-program="{{this.programName}}" data-zone="{{this.zone}}">{{this.programName}} - {{this.zone}}</option>
+                  {{/each}}
+                </select>
+              </div>
             </div>
 
             <div class="col-md-3">
@@ -62,7 +71,7 @@
               type="text" 
               id="programSearch" 
               class="program-search-input" 
-              placeholder="🔍 Search Program..." 
+              placeholder="Search Program..." 
               autocomplete="off"
             />
           </div>
@@ -160,12 +169,73 @@
     });
   });
 
+  // Program search functionality
+  $('#programSearchInput').on('input', function() {
+    const searchValue = $(this).val().toLowerCase().trim();
+    const $select = $('#programSelect');
+    const $options = $select.find('option');
+    let visibleCount = 0;
+    
+    if (searchValue === '') {
+      // Show all options
+      $options.show();
+      $select.prop('disabled', false);
+      return;
+    }
+    
+    // Filter options based on search
+    $options.each(function() {
+      const $option = $(this);
+      // Always show the placeholder option
+      if ($option.val() === '') {
+        $option.show();
+        return;
+      }
+      
+      const optionText = $option.text().toLowerCase();
+      const programName = $option.data('program') || '';
+      const zone = $option.data('zone') || '';
+      
+      // Show if matches program name, zone, or full text
+      if (optionText.includes(searchValue) || 
+          programName.toLowerCase().includes(searchValue) || 
+          zone.toLowerCase().includes(searchValue)) {
+        $option.show();
+        visibleCount++;
+      } else {
+        $option.hide();
+      }
+    });
+    
+    // If no options match (except placeholder), show a message
+    if (visibleCount === 0 && searchValue !== '') {
+      // Optionally disable the select or show a message
+      // For now, just keep it enabled but show placeholder
+    }
+  });
+
+  // Clear search when program is selected (optional - keep search for convenience)
+  $('#programSelect').on('change', function() {
+    const selectedValue = $(this).val();
+    // Don't clear search, but ensure selected option is visible
+    if (selectedValue) {
+      const $selectedOption = $(this).find('option:selected');
+      $selectedOption.show();
+    }
+  });
+
   // Initialize all DataTables after render
   $(document).ready(function() {
     // Restore selected program from sessionStorage
     const savedProgram = sessionStorage.getItem('selectedProgram');
     if (savedProgram) {
       $('#programSelect').val(savedProgram);
+      // Restore search input value if it exists
+      const savedSearch = sessionStorage.getItem('programSearchValue');
+      if (savedSearch) {
+        $('#programSearchInput').val(savedSearch);
+        $('#programSearchInput').trigger('input');
+      }
       // Trigger change to load members if team is also selected
       const savedTeam = sessionStorage.getItem('selectedTeam');
       if (savedTeam) {
@@ -176,12 +246,19 @@
 
     // Save selected program when changed
     $('#programSelect').on('change', function() {
-      sessionStorage.setItem('selectedProgram', $(this).val());
+      const selectedValue = $(this).val();
+      sessionStorage.setItem('selectedProgram', selectedValue);
+      // Don't clear search when program is selected - keep it for convenience
     });
 
     // Save selected team when changed
     $('#teamSelect').on('change', function() {
       sessionStorage.setItem('selectedTeam', $(this).val());
+    });
+
+    // Save search input value
+    $('#programSearchInput').on('input', function() {
+      sessionStorage.setItem('programSearchValue', $(this).val());
     });
 
     // Initialize DataTables for all tables but disable their search boxes

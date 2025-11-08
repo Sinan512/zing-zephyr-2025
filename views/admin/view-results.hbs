@@ -13,7 +13,7 @@
             type="text" 
             id="programSearchInput" 
             class="program-search-input" 
-            placeholder="🔍 Search by Program Name..." 
+            placeholder="Search by Program Name..." 
             autocomplete="off"
           />
           <button class="clear-search-btn" id="clearSearchBtn" style="display: none;" onclick="clearSearch()">
@@ -56,13 +56,13 @@
         <div class="zone-table-wrapper mb-4">
           <h4 class="zone-title">Pre Zone Topper</h4>
           <div class="table-responsive">
-            <table id="preZoneTable" class="display table table-striped table-hover align-middle text-center zone-table" style="width: 100%">
+            <table id="preZoneTable" class="display table table-striped table-hover align-middle text-center zone-table text-uppercase" style="width: 100%">
               <thead>
                 <tr>
                   <th>Prize</th>
                   <th>Member Name</th>
                   <th>Team</th>
-                  <th>Total Marks</th>
+                  <th>Total Points</th>
                   <th>Programs Count</th>
                 </tr>
               </thead>
@@ -184,7 +184,7 @@
         {{/if}}
         <div class="teams-container row g-4">
           {{#each teamsByPoints}}
-          <div class="col-lg-4 col-md-6 col-12">
+          <div class="col-lg-3 col-md-6 col-12">
             <div class="team-card {{#if (eq @index 0)}}gold-card{{else if (eq @index 1)}}silver-card{{else if (eq @index 2)}}bronze-card{{else}}normal-card{{/if}}" data-rank="{{inc @index}}">
               <div class="card-rank">
                 {{#if (eq @index 0)}}
@@ -224,8 +224,8 @@
           <th>Participant</th>
           <th>Team</th>
           <th>Grade</th>
-          <th>Mark</th>
           <th>Point</th>
+          <th>Mark</th>
         </tr>
       </thead>
       <tbody>

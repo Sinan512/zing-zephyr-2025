@@ -3,9 +3,9 @@
 <div class="team-status-container">
   <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-12">
+      <div class="col-12 text-center">
         <h2 class="page-title text-center mb-4">
-          <i class="bi bi-trophy-fill"></i> Team Status
+          <i class="bi bi-trophy"></i> Team Status
         </h2>
 
         {{#if programCount}}
@@ -15,17 +15,17 @@
         {{/if}}
 
         {{#if publishedTeams}}
-          <div class="teams-leaderboard row g-4">
+          <div class="teams-leaderboard row g-4 justify-content-center">
             {{#each publishedTeams}}
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-3">
               <div class="team-status-card {{#if (eq @index 0)}}rank-first{{else if (eq @index 1)}}rank-second{{else if (eq @index 2)}}rank-third{{else}}rank-normal{{/if}}">
-                <div class="rank-badge-large">
+                <div class="rank-badge-large" style="font-family:'Times New Roman', Times, serif;">
                   {{#if (eq @index 0)}}
-                    ①
+                    1st
                   {{else if (eq @index 1)}}
-                    ②
+                    2nd
                   {{else if (eq @index 2)}}
-                    ③
+                    3rd
                   {{else}}
                     #{{inc @index}}
                   {{/if}}

@@ -15,8 +15,6 @@
         <p class="fest-subtitle" style="color: rgba(255, 255, 255, 0.8);">Click the title to edit the Fest name</p>
       </div>
 
-      <h2 class="text-center mb-4">Settings</h2>
-
       <!-- Top Action Buttons -->
       <div class="row justify-content-center mb-4">
         <div class="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
@@ -364,13 +362,13 @@
 
   // Initialize view based on URL parameter
   const urlParams = new URLSearchParams(window.location.search);
-  const view = urlParams.get('view') || 'teams';
-  if (view === 'programs') {
-    showPrograms();
+  const view = urlParams.get('view') || 'programs';
+  if (view === 'teams') {
+    showTeams();
   } else if (view === 'credentials') {
     showCredentials();
   } else {
-    showTeams();
+    showPrograms();
   }
 
   // Fade-in animation

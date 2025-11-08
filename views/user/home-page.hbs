@@ -96,4 +96,57 @@
       }
     });
   });
+
+  // Prevent back navigation - exit site instead
+  (function() {
+    // Replace current history entry to prevent back navigation
+    window.history.pushState(null, null, window.location.href);
+    
+    // Listen for back button press
+    window.addEventListener('popstate', function(event) {
+      // Push state again to prevent navigation
+      window.history.pushState(null, null, window.location.href);
+      
+      // Show confirmation and exit
+      Swal.fire({
+        title: 'Exit Site?',
+        html: '<p>Are you sure you want to leave this page?</p>',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Exit',
+        cancelButtonText: 'Stay',
+        customClass: {
+          popup: 'swal-custom-popup'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Try to close the window/tab
+          if (window.opener) {
+            // If opened in a popup, close it
+            window.close();
+          } else {
+            // For regular tabs, try to close (may not work due to browser security)
+            // If close fails, redirect to blank page
+            try {
+              window.close();
+              // If window.close() doesn't work, redirect after a short delay
+              setTimeout(() => {
+                if (!document.hidden) {
+                  window.location.href = 'about:blank';
+                }
+              }, 100);
+            } catch (e) {
+              // Fallback: redirect to blank page
+              window.location.href = 'about:blank';
+            }
+          }
+        }
+      });
+    });
+
+    // Also prevent back navigation on page load
+    window.history.pushState(null, null, window.location.href);
+  })();
 </script>

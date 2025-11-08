@@ -3,6 +3,7 @@ require('dotenv').config(); // Add this line
 
 // Use environment variable or fallback to local MongoDB
 const uri =  process.env.MONGODB_URI ||"mongodb://127.0.0.1:27017";
+// const uri =  "mongodb://127.0.0.1:27017";
 const client = new MongoClient(uri);
 
 async function connectDB() {

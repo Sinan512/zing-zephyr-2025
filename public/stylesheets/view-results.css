@@ -589,7 +589,6 @@ tr[data-details="true"] {
 .zone-table tbody td strong {
   color: #000000;
   font-size: 1.15rem;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
 }
 
 /* Top 3 rank highlighting */

@@ -91,42 +91,63 @@ module.exports = {
     );
 
    // 8️⃣ Update TEAM_POINTS totals (aggregated by team + program + zone)
+// ✅ 1. Build totals for each team for THIS program + zone
 const teamTotals = {};
 
 for (const r of results) {
   const { team, mark } = r;
-
-  // Count team total for this program + zone
   if (!teamTotals[team]) teamTotals[team] = 0;
   teamTotals[team] += mark;
 }
 
-// Update each team once per program
-for (const [team, totalMark] of Object.entries(teamTotals)) {
-  await db.collection(collections.TEAM_POINTS).updateOne(
-    { team, "programs.programName": programName, "programs.zone": zone },
-    {
-      $set: { "programs.$.totalMark": totalMark },
-      $inc: { totalPoints: totalMark },
-    },
-    { upsert: false }
+// ✅ 2. Update every team for this program
+for (const [team, newMark] of Object.entries(teamTotals)) {
+
+  // Fetch team document
+  const teamDoc = await db.collection(collections.TEAM_POINTS).findOne({ team });
+
+  // ✅ If team doesn't exist, create fresh document
+  if (!teamDoc) {
+    await db.collection(collections.TEAM_POINTS).insertOne({
+      team,
+      totalPoints: newMark,
+      programs: [
+        { programName, zone, totalMark: newMark }
+      ]
+    });
+    continue;
+  }
+
+  // ✅ Check if this program already exists for this team
+  const existingProgram = teamDoc.programs.find(
+    p => p.programName === programName && p.zone === zone
   );
 
-  // If program entry doesn't exist, push it
-  const teamDoc = await db.collection(collections.TEAM_POINTS).findOne({
-    team,
-    "programs.programName": programName,
-    "programs.zone": zone,
-  });
+  if (existingProgram) {
+    // ✅ Program already exists → update using difference
+    const oldMark = existingProgram.totalMark;
+    const diff = newMark - oldMark; // ⬅️ important
 
-  if (!teamDoc) {
+    await db.collection(collections.TEAM_POINTS).updateOne(
+      {
+        team,
+        "programs.programName": programName,
+        "programs.zone": zone
+      },
+      {
+        $set: { "programs.$.totalMark": newMark },
+        $inc: { totalPoints: diff } // ✅ only add diff
+      }
+    );
+
+  } else {
+    // ✅ Program does NOT exist → insert new entry
     await db.collection(collections.TEAM_POINTS).updateOne(
       { team },
       {
-        $push: { programs: { programName, zone, totalMark } },
-        $inc: { totalPoints: totalMark },
-      },
-      { upsert: true }
+        $push: { programs: { programName, zone, totalMark: newMark } },
+        $inc: { totalPoints: newMark } // ✅ add full mark once
+      }
     );
   }
 }
