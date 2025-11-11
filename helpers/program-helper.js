@@ -176,5 +176,9 @@ module.exports={
         finalZoneData.highZone = finalZoneData["High Zone"]; // alias
 
         return finalZoneData;
+    },
+    resetData:async()=>{
+        let db=await connectDB();
+        await db.dropDatabase();
     }
 }

@@ -608,4 +608,8 @@ router.post("/publish-zone-toppers", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/reset",requireAuth,async(req,res)=>{
+ await programHelper.resetData();
+ res.redirect("back");
+})
 module.exports = router;
