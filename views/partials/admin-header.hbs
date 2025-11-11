@@ -12,10 +12,9 @@
       </div>
     </div>
 
-    <div><a href="/admin/reset" class="btn btn-danger">reset</a></div>
-
     <!-- Mobile Menu Toggle (Right Side) -->
 <button class="mobile-menu-toggle d-md-none" id="mobileMenuToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
+  <span class="hamburger-line"></span>
   <span class="hamburger-line"></span>
   <span class="hamburger-line"></span>
   <span class="hamburger-line"></span>
@@ -33,6 +32,7 @@
       <a href="/admin/view-result" class="nav-btn mobile-nav-item">Result</a>
       {{/if}}
       <a href="/admin/settings" class="nav-btn mobile-nav-item">Settings</a>
+      <a href="/admin/reset" class="nav-btn mobile-nav-item" onclick="return confirm('Do You Want To Reset All Data?')">reset</a>
       <a href="/admin/logout" class="nav-btn mobile-nav-item">Logout</a>
     {{/unless}}
     </div>
