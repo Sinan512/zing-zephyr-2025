@@ -185,11 +185,14 @@ module.exports = {
   },
   resetData:async()=>{
     let db=await connectDB();
-    await db.collection(collections.CALL_LISTS).drop().then((data)=>{
-      console.log("data");
-      console.log(data);
-      console.log("data");
-    })
+    await db.collection(collections.CALL_LISTS).drop();
+    await db.collection(collections.RESULTS).drop();
+    await db.collection(collections.TEAM_POINTS).drop();
+    await db.collection(collections.PENDING_RESULTS).drop();
+    await db.collection(collections.PUBLISHED).drop();
+    await db.collection(collections.PUBLISHED_TEAM).drop();
+    await db.collection(collections.INDIVIDUAL_POINTS).drop();
+    await db.collection(collections.PUBLISHED_ZONE_TOPPERS).drop();
   }
 };
 

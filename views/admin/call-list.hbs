@@ -105,11 +105,11 @@
                       <span class="team-badge">{{team}}</span>
                     </td>
                     <td>
-                      <form action="/admin/remove-call-list-member" method="POST" onsubmit="return confirm('Remove {{member}} from {{@../key}}?')" style="display: inline;">
+                      <form action="/admin/remove-call-list-member" class="text-center" method="POST" onsubmit="return confirm('Remove {{member}} from {{@../key}}?')" style="display: inline;">
                         <input type="hidden" name="program" value="{{@../key}}" />
                         <input type="hidden" name="member" value="{{member}}" />
                         <input type="hidden" name="team" value="{{team}}" />
-                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+                        <button type="submit" class="btn px-5"><i class="bi bi-trash-fill"></i></button>
                       </form>
                     </td>
                   </tr>

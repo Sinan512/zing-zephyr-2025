@@ -164,7 +164,7 @@
                     <span>{{this.programName}}</span><span class="text-info" style="color: #b57fff;">{{this.zone}}</span>
                     <form action="/admin/remove-program" method="POST" onclick="return confirm('Do You Want To Remove This Program?')">
                       <input type="hidden" name="programName" value="{{this.programName}} - {{this.zone}}" />
-                      <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
+                      <button type="submit" class="btn"><i class="bi bi-trash-fill" style="color: white;"></i></button>
                     </form>
                   </div>
                 {{/each}}
