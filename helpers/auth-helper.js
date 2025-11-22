@@ -182,6 +182,14 @@ module.exports = {
     }
     req.session.addCodeLetterLastActivity = now;
     return true;
+  },
+  resetData:async()=>{
+    let db=await connectDB();
+    await db.collection(collections.CALL_LISTS).drop().then((data)=>{
+      console.log("data");
+      console.log(data);
+      console.log("data");
+    })
   }
 };
 

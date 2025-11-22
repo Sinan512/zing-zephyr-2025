@@ -608,4 +608,9 @@ router.post("/publish-zone-toppers", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/reset",requireAuth,async (req,res)=>{
+  console.log("reset data >>>>>>>>>");
+  await authHelper.resetData();
+  res.redirect("/admin/enter");
+});
 module.exports = router;

@@ -42,7 +42,7 @@ module.exports={
     },
     addPrograms:async(programData)=>{
         var db=await connectDB();
-        var program=await db.collection(collections.PROGRAMS).findOne({programName:programData.programName});
+        var program=await db.collection(collections.PROGRAMS).findOne({programName:programData.programName,zone:programData.zone});
         if(program){
             console.log("program exist");
         }

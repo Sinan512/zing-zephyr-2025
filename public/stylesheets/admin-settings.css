@@ -103,6 +103,29 @@ body{
 .btn-reset-credentials i {
   margin-right: 8px;
 }
+
+/* reset button  */
+.btn-reset {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(120, 90, 230, 0.8), rgba(187, 85, 227, 0.8));
+  border: 2px solid rgba(181, 127, 255, 0.6);
+  border-radius: 10%;
+  color: #ffffff;
+  padding: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-reset:hover {
+  background: linear-gradient(135deg, rgb(255, 127, 127), rgb(185, 67, 58));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(185, 58, 58, 0.5);
+  border-color: rgb(255, 127, 127);
+}
 .fest-title {
   color: white;
   font-size: 2.8rem;
@@ -232,7 +255,21 @@ body{
 }
 /* group input group input group input group input */
 /* button for add program button for add program button for add program */
-
+.btn-reset{
+  padding: 7px 18px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.4s ease;
+  border: 2px solid var(--glass-border);
+  color: #ffffff;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
 
 /* LIST ITEMS */
 .list-item {
