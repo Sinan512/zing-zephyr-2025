@@ -454,7 +454,11 @@ router.get("/add-point-noLog/", requireAuth, async(req,res)=>{
   let {programName, zone}=req.query;
   const programData = `${programName} - ${zone}`; // matches the DB key format
   var codeLetters=await callListHelper.getCodeLetter(programData);
-  codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
+
+  codeLetters = codeLetters.filter(p => p.codes);   // remove invalid items
+  codeLetters.sort((a, b) => {
+  return a.codes.localeCompare(b.codes);
+  });
   res.render("admin/add-point",{admin:true,fName,programName,codeLetters, zone});
 });
 
