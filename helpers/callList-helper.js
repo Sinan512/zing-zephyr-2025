@@ -86,13 +86,19 @@ module.exports = {
   }
   return { success: true, message: "Code letters successfully saved." };
 },
-getCodeLetter:async(programData)=>{
+getCodeLetter: async (programData) => {
   const db = await connectDB();
-  let codeletters=await db.collection(collections.CALL_LISTS).findOne(
-  { program: programData },
-  { projection: { "participants.codes": 1, _id: 0 } } // 👈 only return code letters
-);
-return codeletters?.participants || [];
+  let codeletters = await db
+    .collection(collections.CALL_LISTS)
+    .findOne(
+      {program: {
+          $regex: "^" + programData.trim().replace(/\s+/g, "\\s*") + "$",
+          $options: "i"  // i = case-insensitive
+        }},
+      { projection: { "participants.codes": 1, _id: 0 } }
+    );
+
+  return codeletters?.participants || [];
 },
 removeCallListMember:async(program, member, team)=>{
   const db = await connectDB();

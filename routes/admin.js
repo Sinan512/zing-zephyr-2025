@@ -446,8 +446,8 @@ router.get("/add-point/", requireAddPointAuth, async(req,res)=>{
   codeLetters.sort((a, b) => a.codes.localeCompare(b.codes)); //this will sort the codeletter
   res.render("admin/add-point",{fName,programName,codeLetters, zone, hideAdminNav: true});
 });// pending to set
-//add point without login 
 
+//add point without login 
 router.get("/add-point-noLog/", requireAuth, async(req,res)=>{
   let fName = await programHelper.GetFestName();
   fName = fName[0].festName;
