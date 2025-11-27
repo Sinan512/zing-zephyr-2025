@@ -154,7 +154,7 @@ module.exports = {
     
     // Check if session is still within 15 minutes
     const now = Date.now();
-    if (req.session.lastActivity && (now - req.session.lastActivity) > 60 * 60 * 1000) {
+    if (req.session.lastActivity && (now - req.session.lastActivity) > 24 * 60 * 60 * 1000) {
       return false;
     }
     
@@ -167,7 +167,7 @@ module.exports = {
   isAddPointSessionValid: (req) => {
     if (!req.session || !req.session.addPointLoggedIn) return false;
     const now = Date.now();
-    if (req.session.addPointLastActivity && (now - req.session.addPointLastActivity) > 15 * 60 * 1000) {
+    if (req.session.addPointLastActivity && (now - req.session.addPointLastActivity) > 5 * 60 * 60 * 1000) {
       return false;
     }
     req.session.addPointLastActivity = now;
@@ -177,7 +177,7 @@ module.exports = {
   isAddCodeLetterSessionValid: (req) => {
     if (!req.session || !req.session.addCodeLetterLoggedIn) return false;
     const now = Date.now();
-    if (req.session.addCodeLetterLastActivity && (now - req.session.addCodeLetterLastActivity) > 15 * 60 * 1000) {
+    if (req.session.addCodeLetterLastActivity && (now - req.session.addCodeLetterLastActivity) > 5 * 60 * 60 * 1000) {
       return false;
     }
     req.session.addCodeLetterLastActivity = now;
