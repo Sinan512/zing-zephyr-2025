@@ -88,18 +88,48 @@ module.exports = {
 },
 getCodeLetter: async (programData) => {
   const db = await connectDB();
-  let codeletters = await db
+
+  // Escape regex special characters so program name becomes SAFE
+  function escapeRegex(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Step 1: Trim outer spaces
+  let cleanProgram = programData.trim();
+
+  // Step 2: Escape special characters ((), +, *, ?, |, [, ])
+  cleanProgram = escapeRegex(cleanProgram);
+
+  // Step 3: Allow flexible internal spacing
+  cleanProgram = cleanProgram.replace(/\s+/g, "\\s*");
+
+  // Step 4: Case-insensitive exact match
+  const programEntry = await db
     .collection(collections.CALL_LISTS)
     .findOne(
-      {program: {
-          $regex: "^" + programData.trim().replace(/\s+/g, "\\s*") + "$",
-          $options: "i"  // i = case-insensitive
-        }},
-      { projection: { "participants.codes": 1, _id: 0 } }
+      {
+        program: {
+          $regex: "^" + cleanProgram + "$",
+          $options: "i"
+        }
+      },
+      {
+        projection: { "participants.codes": 1, _id: 0 }
+      }
     );
 
-  return codeletters?.participants || [];
+  // Step 5: Always return a SAFE array
+  const participants = programEntry?.participants || [];
+
+  // Step 6: Remove any participant without codes (avoid sort crash)
+  const filtered = participants.filter(p => p.codes);
+
+  // Step 7: Sort safely
+  filtered.sort((a, b) => a.codes.localeCompare(b.codes));
+
+  return filtered;
 },
+
 removeCallListMember:async(program, member, team)=>{
   const db = await connectDB();
   const result = await db.collection(collections.CALL_LISTS).updateOne(
