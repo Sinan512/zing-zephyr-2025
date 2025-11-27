@@ -108,8 +108,6 @@ router.post("/reset-credentials", requireAuth, async (req, res) => {
 // Reset Add-Point credentials (separate)
 router.post("/reset-addpoint-credentials", requireAuth, async (req, res) => {
   try {
-    console.log(req.body);
-    
     const { username, password } = req.body;
     await authHelper.updateAddPoint(username, password);
     res.redirect("/admin/settings?success=Add-Point credentials updated successfully");
