@@ -154,7 +154,7 @@ module.exports = {
     
     // Check if session is still within 15 minutes
     const now = Date.now();
-    if (req.session.lastActivity && (now - req.session.lastActivity) > 15 * 60 * 1000) {
+    if (req.session.lastActivity && (now - req.session.lastActivity) > 60 * 60 * 1000) {
       return false;
     }
     

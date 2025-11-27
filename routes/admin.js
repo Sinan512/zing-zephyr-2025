@@ -4,6 +4,7 @@ const programHelper = require("../helpers/program-helper");
 const callListHelper = require("../helpers/callList-helper");
 const resultHelper = require("../helpers/result-helper");
 const authHelper = require("../helpers/auth-helper");
+const { log } = require("handlebars");
 
 // Middleware to check if admin is logged in and refresh session
 const requireAuth = async (req, res, next) => {
@@ -107,6 +108,8 @@ router.post("/reset-credentials", requireAuth, async (req, res) => {
 // Reset Add-Point credentials (separate)
 router.post("/reset-addpoint-credentials", requireAuth, async (req, res) => {
   try {
+    console.log(req.body);
+    
     const { username, password } = req.body;
     await authHelper.updateAddPoint(username, password);
     res.redirect("/admin/settings?success=Add-Point credentials updated successfully");
