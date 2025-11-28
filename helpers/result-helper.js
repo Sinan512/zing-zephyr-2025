@@ -346,10 +346,21 @@ for (const r of results) {
     
     return { message: "Individual points initialized", count: processedCount };
   },
-  viewAllResult:async()=>{
-    var db=await connectDB();
-    return await db.collection(collections.RESULTS).find().toArray();
-  },
+  viewAllResult: async () => {
+  const db = await connectDB();
+
+  let programs = await db.collection(collections.RESULTS).find().toArray();
+
+  // ⭐ Sort each program's result list
+  programs = programs.map(p => {
+    if (Array.isArray(p.results)) {
+      p.results.sort((a, b) => b.mark - a.mark); // highest → lowest
+    }
+    return p;
+  });
+
+  return programs;
+},
   searchResultsByName:async(searchQuery)=>{
     var db=await connectDB();
     // Case-insensitive search for program name
