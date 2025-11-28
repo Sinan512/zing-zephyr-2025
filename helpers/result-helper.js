@@ -5,13 +5,46 @@ const ObjectId = require("mongodb").ObjectId;
 
 // helpers/resultHelper.js
 module.exports = {
-  addPoint: async (body) => {
-    const db = await connectDB();
-    const { programName, zone } = body;
+ addPoint: async (body) => {
+  const db = await connectDB();
+  let { programName, zone } = body;
 
-    // 1️⃣ Get maxMark from PROGRAMS
-    const programData = await db.collection(collections.PROGRAMS).findOne({ programName });
-    if (!programData) throw new Error("Program not found in PROGRAMS collection.");
+  // Clean the zone a bit (case-insensitive match later if needed)
+  const cleanZone = zone.trim();
+
+  // Normalization: remove ALL whitespace and lowercase
+  const normalize = (str) => {
+    if (!str) return "";
+    return str.replace(/\s+/g, "").toLowerCase();
+  };
+
+  const targetNameNorm = normalize(programName);
+
+  // 1️⃣ Get all programs in this zone (usually small list)
+  const programsInZone = await db
+    .collection(collections.PROGRAMS)
+    .find({
+      zone: {
+        $regex: "^" + cleanZone + "$",
+        $options: "i", // case-insensitive zone match
+      },
+    })
+    .toArray();
+
+  // 2️⃣ Find the program whose normalized name matches the incoming one
+  const programData = programsInZone.find(
+    (p) => normalize(p.programName) === targetNameNorm
+  );
+
+  console.log("Matched Program:", programData);
+
+  if (!programData) throw new Error( `Program not found in PROGRAMS collection for name "${programName}" and zone "${zone}"`
+);
+
+// 👇 IMPORTANT: Update values to TRUE DB versions
+programName = programData.programName;
+zone = programData.zone;
+
     const maxMark = programData.maxMark;
 
     // 2️⃣ Get participants from CALL_LISTS

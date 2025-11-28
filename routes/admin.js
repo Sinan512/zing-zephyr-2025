@@ -479,7 +479,11 @@ router.post("/save-points", async(req,res)=>{
 //admin save point
 router.post("/save-points-admin", async(req,res)=>{
   try {
+    console.log(req.body);
+    console.log("upp body");
     await resultHelper.addPoint(req.body);
+    
+    
     const { programName, zone } = req.body;
     const redirectUrl = `/admin/add-point-noLog/?programName=${encodeURIComponent(programName)}&zone=${encodeURIComponent(zone)}&success=true`;
     res.redirect(redirectUrl);
